@@ -1,0 +1,17 @@
+services:
+  manager_study:
+    image: wisrovi/train_service:manager_orchestrator_v1.0.0
+    restart: always
+    env_file:
+      - control_host.env
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - control_network
+
+networks:
+  control_network:
+    external: true

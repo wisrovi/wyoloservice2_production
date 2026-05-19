@@ -10,3 +10,11 @@ start_env:
 stop_env:
 	@echo "Stopping environment..."
 	@docker-compose -f docker-compose.env.yml --env-file control_host.env down
+
+stop_manager:
+	@echo "Stopping manager..."
+	@docker-compose -f docker-compose.manager.yml --env-file control_host.env down
+
+start_manager:
+	@echo "Starting manager..."
+	@docker-compose -f docker-compose.manager.yml --env-file control_host.env up -d
