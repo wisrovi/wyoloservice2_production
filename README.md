@@ -11,3 +11,7 @@ Refer to the individual directories for specific setup instructions.
 
 
 sudo mount -t cifs //192.168.10.252/datasets /mnt/nas_dataset/ -o username=wisrovi,password=wyoloservice,port=23449,file_mode=0777,dir_mode=0777,iocharset=utf8
+
+
+volumes:
+      - /mnt/nas_dataset:/wyolo/control_server/datasets
