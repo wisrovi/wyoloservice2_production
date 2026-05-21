@@ -33,3 +33,6 @@ start_gradio: user.env
 
 start_worker: user.env
 	docker-compose -f docker-compose.yaml --env-file ./user.env  --env-file ./control_host.env  --compatibility up -d --build --force-recreate --no-deps  --pull always worker
+
+stop_worker:
+	docker-compose -f docker-compose.yaml --env-file ./user.env  --env-file ./control_host.env  --compatibility down worker

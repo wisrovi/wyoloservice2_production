@@ -2,6 +2,7 @@ services:
   manager_study:
     image: wisrovi/train_service:manager_orchestrator_v1.0.0
     restart: always
+    hostname: ${CONTROL_HOST}
     env_file:
       - control_host.env
     logging:

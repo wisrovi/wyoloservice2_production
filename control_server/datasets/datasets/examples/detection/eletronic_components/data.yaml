@@ -1,0 +1,6 @@
+train: /wyolo/control_server/datasets/examples/detection/eletronic_components/train/images
+val: /wyolo/control_server/datasets/examples/detection/eletronic_components/valid/images
+test: /wyolo/control_server/datasets/examples/detection/eletronic_components/test/images
+
+nc: 2
+names: ['multimeter', 'stm32']
