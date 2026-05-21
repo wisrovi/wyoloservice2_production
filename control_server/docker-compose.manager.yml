@@ -2,14 +2,32 @@ services:
   manager_study:
     image: wisrovi/train_service:manager_orchestrator_v1.0.0
     restart: always
-    hostname: ${CONTROL_HOST}
-    env_file:
-      - control_host.env
+    hostname: NAS_Train_service
+    environment:
+      - CONTROL_HOST=192.168.1.137
+      - CIFS_USER=wisrovi
+      - CIFS_PASS=wyoloservice
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
+    networks:
+      - control_network
+
+  watchtower:
+    image: containrrr/watchtower
+    restart: always
+    environment:
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_SCHEDULE=0 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *
+      - WATCHTOWER_CLEANUP=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
     networks:
       - control_network
 
