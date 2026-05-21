@@ -4,7 +4,7 @@ services:
   worker:
     image: wisrovi/train_service:worker_invoker_v1.0.0
     container_name: worker_${WORKER_NAME}
-    hostname: worker_${WORKER_NAME}
+    hostname: ${WORKER_HOST}
     restart: always
     deploy:
       resources:
@@ -21,17 +21,18 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/wyolo/request:/wyolo/worker/request
+      - /home/wyolo/events:/wyolo/worker/events
       - /home/wyolo/train_service_results:/home/wyolo/train_service_results
     labels:
       - "autoheal=true"
       - "com.centurylinklabs.watchtower.enable=true"
     healthcheck:
-      test: ["CMD", "celery", "-A", "worker_gpu", "inspect", "ping", "-d", "celery@worker_${WORKER_NAME}"]
+      test: ["CMD", "celery", "-A", "worker_gpu", "status"]
       interval: 30s
       timeout: 10s
       retries: 3
     command: >
-      celery -A worker_gpu worker -Q ${WORKER_NAME},gpus_high,gpus_medium,gpus_low 
+      celery -A worker_gpu worker -Q ${WORKER_HOST},gpus_high,gpus_medium,gpus_low 
       --loglevel=info --concurrency=1 --prefetch-multiplier=1 -Ofair 
       --max-tasks-per-child=1 --max-memory-per-child=250000 
       --without-gossip --without-mingle --without-heartbeat

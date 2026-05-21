@@ -18,3 +18,5 @@ stop_manager:
 start_manager:
 	@echo "Starting manager..."
 	@docker-compose -f docker-compose.manager.yml --env-file control_host.env up -d
+
+start_all: create_network start_env start_manager

@@ -1,0 +1,13 @@
+metadata:
+  author: "William Rodr\xEDguez - wisrovi"
+  content: Experimento lanzado desde script headless
+model: yolov8n-cls.pt
+sweeper:
+  fitness: metrics/accuracy_top1
+  study_name: exp_deteccion_headless
+train:
+  batch: -1
+  data: /datasets/examples/clasification/colorball.v8i.multiclass/
+  epochs: 2
+  imgsz: 640
+type: yolo
