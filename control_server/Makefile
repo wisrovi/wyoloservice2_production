@@ -19,4 +19,12 @@ start_manager:
 	@echo "Starting manager..."
 	@docker-compose -f docker-compose.manager.yml --env-file control_host.env up -d
 
-start_all: create_network start_env start_manager
+stop_api:
+	@echo "Stopping API..."
+	@docker-compose -f docker-compose.api.yml --env-file control_host.env down
+
+start_api:
+	@echo "Starting API..."
+	@docker-compose -f docker-compose.api.yml --env-file control_host.env up -d --pull always
+
+start_all: create_network start_env start_api start_manager
