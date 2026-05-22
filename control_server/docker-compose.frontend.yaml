@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:    
+  neuroforge-frontend:
+    image: wisrovi/train_service:w_darwin_ops_frontend_v1.0.0
+    ports:
+      - "23432:4173"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - VITE_API_URL=http://${CONTROL_HOST:-localhost}:23442/
+      - VITE_MLFLOW_TRACKING_URI=http://${CONTROL_HOST:-localhost}:23435/
+      - VITE_REDIS_TRACKING_URL=http://${CONTROL_HOST:-localhost}:23438/
+      - VITE_FILEBROWSER_URL=http://${CONTROL_HOST:-localhost}:23448/files/
+    env_file:
+      - ./control_host.env
+    networks:
+      - control_network
+
+networks:
+  control_network:
+    external: true
