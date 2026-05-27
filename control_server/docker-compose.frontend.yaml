@@ -7,10 +7,10 @@ services:
       - "23432:4173"
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - VITE_API_URL=http://${CONTROL_HOST:-localhost}:23442/
-      - VITE_MLFLOW_TRACKING_URI=http://${CONTROL_HOST:-localhost}:23435/
-      - VITE_REDIS_TRACKING_URL=http://${CONTROL_HOST:-localhost}:23438/
-      - VITE_FILEBROWSER_URL=http://${CONTROL_HOST:-localhost}:23448/files/
+      - VITE_API_URL=http://${CONTROL_HOST:-localhost}:23442
+      - VITE_MLFLOW_TRACKING_URI=http://${CONTROL_HOST:-localhost}:23435
+      - VITE_REDIS_TRACKING_URL=http://${CONTROL_HOST:-localhost}:23438
+      - VITE_FILEBROWSER_URL=http://${CONTROL_HOST:-localhost}:23448/files
     env_file:
       - ./control_host.env
     networks:
