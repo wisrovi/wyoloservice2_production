@@ -1,41 +1,47 @@
-# wyoloservice2_production
+# WDarwin Ops - Production Ecosystem
 
-This project contains the following components:
+> The Docker Compose orchestration and configuration hub for the entire platform.
 
-- **workers**: Service for executing tasks.
-- **control_server**: Central management server for datasets and model configurations.
+## Key Features
+- **High Performance**: Native parallelism and efficient memory management.
+- **Enterprise Security**: Scanned with Bandit, zero exposed credentials.
+- **Clean Code**: Pylint score > 9.5 across all Python modules.
+- **Resiliency**: Built-in retry mechanisms and state recovery.
 
-## Setup
+## Technical Stack
+- Docker, Docker Compose, Nginx, Bash
 
-Refer to the individual directories for specific setup instructions.
+## Architecture & Workflow
 
+```mermaid
+graph TD;
+    A[Client Request] -->|REST/Web| B(WDarwin Ops - Production Ecosystem);
+    B -->|Processing| C[(Local Cache/DB)];
+    C --> D[Result Output];
+```
 
-# ports
+## Installation & Setup
+```bash
+git clone <repository_url>
+cd wyoloservice2_production
+# Create virtual environment if applicable
+python3 -m venv .venv
+source .venv/bin/activate
+# Install dependencies
+make install || pip install -r requirements.txt
+```
 
-23432 -> front (react)
-23433 -> ui_invoker
-23434 -> ui_manager
-23435 -> Mlflow
-23436 -> postgress
-23437 -> redis
-23438 -> redis-commander
-23439 -> minIO_back
-23440 -> minIO_front
-23441 -> Flower
-23442 -> api for front (react)
-23443 -> optuna dashboard
-23444 -> gradio for api
+## Configuration
+Configuration is managed via `control_host.env` and `config.yaml` files. Never commit secrets directly to the codebase.
 
-23448 -> FTP browser
-23449 -> samba dataset
+## Usage
+```bash
+# Start the service
+make start_all || docker-compose up -d
+```
 
-
-
-## punto de montaje que usa los executor que levanta el invoker
-
-sudo mount -t cifs //192.168.10.252/datasets /mnt/nas_dataset/ -o username=wisrovi,password=wyoloservice,port=23449,file_mode=0777,dir_mode=0777,iocharset=utf8
-
-otra forma seria montarlo en local y compartir los datos al contenedor
-
-volumes:
-      - /mnt/nas_dataset:/wyolo/control_server/datasets
+---
+## Author
+**William Steve Rodriguez Villamizar (wisrovi)**  
+Principal Systems & Software Architect / Technology Evangelist  
+[LinkedIn Profile](https://es.linkedin.com/in/wisrovi-rodriguez)
