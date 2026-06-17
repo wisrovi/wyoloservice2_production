@@ -36,9 +36,16 @@ Configuration is managed via `control_host.env` and `config.yaml` files. Never c
 
 ## Usage
 ```bash
-# Start the service
-make start_all || docker-compose up -d
+# Start the service (built from source in NeuralForgeAI)
+cd control_server/api
+docker-compose up -d --build
 ```
+
+### Services Status
+- **API**: Running on http://localhost:23442 (FastAPI)
+- **UI**: Running on http://localhost:23432 (React)
+
+Note: The services are configured to build from the source code located in `NeuralForgeAI/api` and `NeuralForgeAI/UI`.
 
 ---
 ## Author
