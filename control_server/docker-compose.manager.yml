@@ -2,11 +2,9 @@ services:
   manager_study:
     image: wisrovi/train_service:manager_orchestrator_v1.0.0
     restart: always
-    hostname: NAS_Train_service
-    environment:
-      - CONTROL_HOST=192.168.1.137
-      - CIFS_USER=wisrovi
-      - CIFS_PASS=wyoloservice
+    hostname: NAS_Train_service    
+    env_file:
+      - control_host.env
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
     logging:
@@ -16,32 +14,7 @@ services:
         max-file: "3"
     networks:
       - control_network
-  
-  ui_manager:
-    image: wisrovi/train_service:manager_ui_v1.0.0
-    restart: unless-stopped
-    env_file:
-      - control_host.env
-    ports:
-      - "23434:7860"
-    depends_on:
-      - manager_study
-    networks:
-      - control_network
 
-  watchtower:
-    image: containrrr/watchtower
-    restart: always
-    environment:
-      - WATCHTOWER_LABEL_ENABLE=true
-      - WATCHTOWER_SCHEDULE=0 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *
-      - WATCHTOWER_CLEANUP=true
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    labels:
-      - "com.centurylinklabs.watchtower.enable=false"
-    networks:
-      - control_network
 
 networks:
   control_network:
