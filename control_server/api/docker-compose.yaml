@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:    
+  ui:
+    image: wisrovi/train_service:w_darwin_ops_frontend_v1.0.0
+    ports:
+      - "23432:4173"
+    environment:
+      - VITE_API_URL=http://192.168.10.252:23442
+      - VITE_MLFLOW_TRACKING_URI=http://192.168.10.252:23435
+      - VITE_REDIS_TRACKING_URL=http://192.168.10.252:23438
+      - VITE_FILEBROWSER_URL=http://192.168.10.252:23448/VITE_FILEBROWSER_URL
+      # CONTROL_HOST
+      - CONTROL_HOST=192.168.10.252
+      - CIFS_USER=wisrovi
+      - CIFS_PASS=wyoloservice
+      # gemini api key
+      - GEMINI_API_KEY=AIzaSyB2Ny-uqnwANVOXAXS3cT-U1AZ3bvldKAU
+
+
+  api:
+    image: wisrovi/train_service:api_server_v1.0.0
+    container_name: control_server-fastapi-1
+    ports:
+      - "23442:8000"
+    environment:
+      - CONTROL_HOST=192.168.10.252
+      - CIFS_USER=wisrovi
+      - CIFS_PASS=wyoloservice
+    restart: always
+
+
