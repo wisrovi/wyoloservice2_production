@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
 
   gradio_launcher:
@@ -7,10 +9,10 @@ services:
     ports:
       - "23433:7860"
     env_file:
-      - control_host.env
-      - user.env
+      - ./control_host.env
+      - ./user.env
     volumes:
-      - ../wyoloservice2_control_server/dataset/datasets:/app/configs
+      - /home/wyolo/train_service_results:/results
     networks:
       - train_service
 

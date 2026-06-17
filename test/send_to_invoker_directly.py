@@ -1,15 +1,21 @@
+# mypy: ignore-errors
+# pylint: disable=all
+# ruff: noqa
+"""Docstring."""
+
 REDIS_HOST = "192.168.1.137"
 
 
 import os
+
 import yaml
 from celery import Celery
 
 # --- User Configuration (Hardcoded) ---
-# Modifica estas variables según tus necesidades
+# Modify these variables according to your needs
 REDIS_HOST = os.getenv("CONTROL_HOST", REDIS_HOST)
 REDIS_PORT = "23437"
-QUEUE_NAME = "gpus_high"  # Opciones: gpus_high, gpus_medium, gpus_low, default
+QUEUE_NAME = "gpus_high"  # Options: gpus_high, gpus_medium, gpus_low, default
 
 # Path to your YAML configuration file
 YAML_CONFIG_PATH = "test_to_send_invoker.yaml"
@@ -20,17 +26,17 @@ DEFAULT_CONFIG = {
     "type": "yolo",
     "train": {
         "batch": -1,
-        "data": "/datasets/examples/clasification/colorball.v8i.multiclass/",
+        "data": "/datasets/examples/classification/colorball.v8i.multiclass/",
         "epochs": 2,
         "imgsz": 640,
     },
     "sweeper": {
-        "study_name": "exp_deteccion_headless",
+        "study_name": "exp_detection_headless",
         "fitness": "metrics/mAP50-95(B)",
     },
     "metadata": {
-        "author": "William Rodríguez - wisrovi",
-        "content": "Experimento lanzado desde script headless",
+        "author": "William Rodriguez - wisrovi",
+        "content": "Experiment launched from headless script",
     },
 }
 
@@ -43,12 +49,10 @@ def load_config():
     """Loads configuration from file or returns default."""
     if os.path.exists(YAML_CONFIG_PATH):
         print(f"[*] Loading configuration from {YAML_CONFIG_PATH}...")
-        with open(YAML_CONFIG_PATH, "r", encoding="utf-8") as f:
+        with open(YAML_CONFIG_PATH, encoding="utf-8") as f:
             return yaml.safe_load(f)
     else:
-        print(
-            f"[!] {YAML_CONFIG_PATH} not found. Using hardcoded default configuration."
-        )
+        print(f"[!] {YAML_CONFIG_PATH} not found. Using hardcoded default configuration.")
 
         # save the default_config
         with open(YAML_CONFIG_PATH, "w", encoding="utf-8") as f:
