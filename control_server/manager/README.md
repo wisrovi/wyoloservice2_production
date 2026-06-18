@@ -21,6 +21,30 @@ The `manager` subsystem contains the core intelligence of the hyperparameter evo
 
 ---
 
+## 🗺️ Manager Logic Loop
+
+```mermaid
+sequenceDiagram
+    participant Queue as Redis ('managers' queue)
+    participant Celery as Study Manager Worker
+    participant Optuna as Optuna (PostgreSQL)
+    participant GPU as Redis ('gpus_*' queues)
+    
+    Queue->>Celery: Pop Task (YAML Config)
+    Celery->>Optuna: Load/Create Study (study_name)
+    loop N Trials (Genetic Algorithm)
+        Optuna-->>Celery: Suggest Hyperparameters
+        Celery->>GPU: Push Train Task (Mutated YAML)
+        GPU-->>Celery: Wait for result
+        GPU->>Celery: Return Fitness Score (e.g. mAP 0.85)
+        Celery->>Optuna: Report Trial Value
+        Optuna->>Optuna: Evolve Population (TPE)
+    end
+    Celery->>Optuna: Finish Study
+```
+
+---
+
 ## 🚀 Usage
 
 *Ensure the `/environment` stack is running, specifically Redis and PostgreSQL, before launching the Manager.*

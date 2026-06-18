@@ -26,6 +26,37 @@ This stack provisions the core application servers:
 
 ---
 
+## 🗺️ API Internal Data Flow
+
+```mermaid
+graph TD
+    Client[Browser / React UI]
+    
+    subgraph FastAPI Gateway
+        T[Endpoint: /train]
+        H[Endpoint: /health & /tasks]
+        P[Endpoints: /users, /projects, /services]
+    end
+    
+    subgraph Data Layer
+        RQ[(Redis: Celery Queues)]
+        RP[(Redis: Persistence Keys)]
+        PS[psutil: OS Telemetry]
+    end
+
+    Client -->|POST config.yaml| T
+    T -->|Enqueue Task| RQ
+    
+    Client -->|GET Metrics| H
+    H -->|Query Queue Depth| RQ
+    H -->|Query HW Stats| PS
+    
+    Client -->|GET/POST App State| P
+    P -->|Sync 'omni_*' keys| RP
+```
+
+---
+
 ## 🚀 Usage
 
 *Ensure the `/environment` stack is running before starting the API, as FastAPI immediately attempts to ping Redis upon startup.*

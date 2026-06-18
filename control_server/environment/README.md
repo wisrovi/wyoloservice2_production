@@ -23,6 +23,30 @@ This docker-compose file initiates the creation of the external `control_network
 
 ---
 
+## 🗺️ Environment Topology
+
+```mermaid
+graph LR
+    subgraph Host OS (Master Node)
+        subgraph control_network (Docker Bridge)
+            R[(Redis :23437)]
+            P[(PostgreSQL :23436)]
+            M[(MinIO :23438)]
+            ML[MLflow :23435]
+            F[Filebrowser :23443]
+        end
+        
+        Vol1[(Volumes: PG Data)] -.-> P
+        Vol2[(Volumes: MinIO Data)] -.-> M
+        Vol3[(Volumes: MLflow artifacts)] -.-> ML
+    end
+
+    ML -->|Logs run metadata| P
+    ML -->|Saves artifacts| M
+```
+
+---
+
 ## 🚀 Usage
 
 **Start the infrastructure:**

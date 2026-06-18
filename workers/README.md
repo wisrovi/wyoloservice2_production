@@ -34,6 +34,26 @@ Running alongside the Invoker is a highly configured Watchtower container. Every
 
 ---
 
+## 🗺️ Node Lifecycle & Resilience Flow
+
+```mermaid
+graph TD
+    subgraph OS Layer
+        S[Systemd Service] -->|ExecStart| L(Bash Launcher Loop)
+    end
+    
+    subgraph Docker Daemon
+        L -->|Check/Recreate every 10m| C[Invoker Container]
+        W[Watchtower Container] -->|Polls Docker Hub every 10m| Hub[(Docker Hub)]
+        W -->|Updates Image & Restarts| C
+    end
+    
+    C <-->|Listens for tasks| Redis[(Remote Redis Queue)]
+    C -->|Downloads Data| Storage[(Remote MinIO)]
+```
+
+---
+
 ## 🚀 Installation Guide
 
 ### Prerequisites
