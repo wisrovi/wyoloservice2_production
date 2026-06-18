@@ -1,33 +1,82 @@
-# 🚀 Train Service: Production Invoker
+# ⚙️ Worker Invoker Node <br> <span style="font-size:0.6em; font-weight:normal;">Automated Installation & Resilience Engine</span>
 
-This directory contains the files necessary to deploy a **Worker Invoker** in a Linux production environment (Ubuntu/Debian preferred).
+![Role](https://img.shields.io/badge/role-GPU%20Compute%20Node-0ea5e9.svg)
+![OS](https://img.shields.io/badge/os-Linux%20%28Systemd%29-yellow.svg)
 
-## Content
+This directory contains the deployment logic and lifecycle management tools for the **Worker Invoker** (also related to the Executor layer). These scripts transform any raw Linux machine equipped with NVIDIA GPUs into an indestructible, auto-updating compute node integrated seamlessly into the **NeuralForgeAI** cluster.
 
-- `docker-compose.yaml`: Defines services (Worker and Gradio Launcher) using pre-built images from Docker Hub.
-- `install.sh`: Automatic installation script that configures directories, generates system metadata, and activates a **Systemd** service.
-- `uninstall.sh`: Script to completely clean up the installation.
-- `launcher_invoker.sh`: Bridge script between Systemd and Docker Compose.
-- `worker_invoker@.service`: Service template for Systemd.
-- `Makefile`: Shorthand commands for quick management.
+The Worker Invoker is the "muscle" of the operation. It listens to the Celery priority queues (managed by the Master Node), downloads datasets, executes heavy YOLO trainings, and uploads the resulting artifacts (weights, metrics, confusion matrices) back to the centralized MLflow and MinIO instances.
 
-## Quick Installation
+---
 
-1. Ensure you have Docker and Docker Compose installed.
-2. Configure the `control_host.env` file with your control server's IP (if it doesn't exist, the installer will create a template).
-3. Execute:
-   ```bash
-   make install
-   ```
+## 🏗️ Directory Architecture
 
-## Management
+To keep the installation clean and modular, the configuration files are logically separated:
 
-- **View status**: `make status`
-- **View logs**: `make logs`
-- **Uninstall**: `make uninstall`
+*   **`/docker/`**: Contains the Docker Compose definitions and environment variable templates required to run the Invoker containers and Watchtower.
+*   **`/os/`**: Contains the native Linux integration scripts (Systemd service units and Bash watchdogs) that ensure the container stays alive at the OS level.
+*   **`install.sh`**: The master deployment script that binds everything together.
+*   **`uninstall.sh`**: Safely removes the service, stops containers, and cleans up the system.
 
-## Technical Notes
+---
 
-- The worker automatically registers in Celery using its local IP as a unique name.
-- The service is configured to restart automatically if it fails.
-- Training results are saved in `/home/wyolo/train_service_results`.
+## 🛡️ Resilience & Auto-Healing Mechanisms
+
+We have engineered this node to operate with zero human intervention once deployed:
+
+### 1. The Bash Watchdog (Systemd)
+Instead of relying solely on Docker's `--restart always`, we deploy a custom `systemd` service (`worker_invoker@.service`). This service runs a lightweight, infinite Bash loop (`launcher_invoker.sh`) that polls the Docker engine every **10 minutes**. 
+*   If an administrator or a rogue process accidentally deletes or forcefully stops the Invoker container (`docker rm -f`), the Watchdog will detect the absence and autonomously re-create the container with its full original configuration.
+
+### 2. Watchtower (Auto-Updater)
+Running alongside the Invoker is a highly configured Watchtower container. Every **10 minutes**, it silently queries Docker Hub. 
+*   If a new version of the Worker image (`wisrovi/train_service:worker_invoker_v1.0.0`) is pushed, Watchtower gracefully stops the current training (if safe), pulls the new layer, and spins up the new container automatically.
+
+---
+
+## 🚀 Installation Guide
+
+### Prerequisites
+1.  A Linux machine (Ubuntu/Debian recommended).
+2.  **NVIDIA Drivers** and **NVIDIA Container Toolkit** installed.
+3.  Docker and Docker Compose installed.
+4.  Network visibility to the Master Node (Control Server).
+
+### Deployment Steps
+
+1.  **Configure the Master Node IP:**
+    Edit the `docker/control_host.env` file (or provide one in the root `workers/` directory) and set the `CONTROL_HOST` variable to match the IP of your master server.
+    ```env
+    CONTROL_HOST=192.168.10.252
+    ```
+
+2.  **Run the Installer:**
+    Execute the script with `sudo`. It will auto-detect your Hardware (RAM, CPU Cores, NVIDIA GPU model), generate the necessary metadata, and register the service.
+    ```bash
+    sudo chmod +x install.sh
+    sudo ./install.sh
+    ```
+
+3.  **Verify the Installation:**
+    Check that the systemd service is active and the Watchdog is running:
+    ```bash
+    systemctl status worker_invoker@$(hostname -I | awk '{print $1}')
+    docker ps | grep wyolo_invoker
+    ```
+
+### Uninstallation
+If you need to permanently remove this machine from the GPU cluster:
+```bash
+sudo ./uninstall.sh
+```
+
+---
+
+## 🔄 Interaction with the Executor
+The **Invoker** acts as the primary listener on the Celery queues (`gpus_high`, `gpus_medium`, `gpus_low`). When a task is picked up, the Invoker utilizes the underlying **Executor** logic to parse the YAML configuration, bridge the connection to Optuna, and launch the localized YOLO training subroutine.
+
+---
+
+## 👨‍💻 Author
+**William Steve Rodriguez Villamizar (wisrovi)**  
+*AI Leader & Solutions Architect*
