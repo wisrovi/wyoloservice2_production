@@ -48,7 +48,7 @@ trap cleanup SIGTERM SIGINT
 # Re-create network if it doesn't exist (silent)
 docker network create train_service 2>/dev/null || true
 
-echo "Starting Watchdog loop... (Monitoring containers every 30 seconds)"
+echo "Starting Watchdog loop... (Monitoring containers every 10 minutes)"
 # --- 3. WATCHDOG LOOP ---
 while true; do
     # Run in detached mode. If a container was deleted or stopped, this brings it back up.
@@ -56,6 +56,6 @@ while true; do
     docker-compose -p "$PROJECT_NAME" up -d --remove-orphans > /dev/null 2>&1
     
     # Sleep in background and wait allows the trap to interrupt the sleep instantly
-    sleep 30 &
+    sleep 600 &
     wait $!
 done
