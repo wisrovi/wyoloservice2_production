@@ -37,16 +37,15 @@ The project is built upon a modern, high-performance technology stack:
 
 ## 🧩 Microservices Ecosystem
 
-The system comprises multiple specialized components that interact asynchronously:
+The system comprises multiple specialized components that interact asynchronously. Below are the core repositories that power the platform:
 
 | Microservice | Source Repo | Description & Purpose |
 | :--- | :--- | :--- |
-| **Control Host (Infra)** | `wyoloservice2_control_server` | Deploys the data foundation: Redis (queues), PostgreSQL (DB), MLflow (metrics), and MinIO (weights). |
-| **API Server** | `NeuralForgeAI/api` | FastAPI server (`:23442`). Receives YAMLs, provides real-time cluster telemetry, and manages user/project persistence via Redis. |
-| **WDarwin Ops (UI)** | `NeuralForgeAI/UI` | React Single Page Application (`:23432`). Global control panel, observability dashboard, and identity management (Roaming Profile). |
-| **Study Manager** | `wyoloservice2_manager` | Celery consumer. Listens to the `managers` queue, processes Optuna studies, creates trials (mutations), and dispatches them to the GPU queues. |
-| **Worker Invoker** | `wyoloservice2_invoker` | Heavy-execution GPU node. Picks up tasks from priority queues (`gpus_high`, etc.), trains YOLO models, and pushes results to MLflow and MinIO. |
-| **Gradio / Simple UI** | `wyoloservice2_manager/UI` | Fallback alternative interface built with Gradio for quick operations bypassing React. |
+| **Production Hub** | [wisrovi/wyoloservice2_production](https://github.com/wisrovi/wyoloservice2_production) | **(Current Repo)** The main entry point. Contains the Docker Compose stacks, cluster architecture, and node installation scripts. |
+| **Control Host (Infra)** | [wisrovi/wyoloservice2_control_server](https://github.com/wisrovi/wyoloservice2_control_server) | Deploys the data foundation: Redis (queues), PostgreSQL (DB), MLflow (metrics), and MinIO (weights). |
+| **API Server & UI** | [wisrovi/NeuralForgeAI](https://github.com/wisrovi/NeuralForgeAI) | Houses both the FastAPI server (`/api`) and the WDarwin Ops React Application (`/UI`). Manages telemetry and dynamic state sync. |
+| **Study Manager** | [wisrovi/wyoloservice2_manager](https://github.com/wisrovi/wyoloservice2_manager) | Celery consumer. Listens to the `managers` queue, processes Optuna studies, creates trials (mutations), and dispatches them to the GPU queues. |
+| **Worker Invoker** | [wisrovi/wyoloservice2_invoker](https://github.com/wisrovi/wyoloservice2_invoker) | Heavy-execution GPU node logic. Picks up tasks from priority queues (`gpus_high`, etc.), trains YOLO models, and pushes results to MLflow/MinIO. |
 
 ---
 
