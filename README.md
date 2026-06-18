@@ -154,9 +154,7 @@ make start_manager
 Every machine equipped with graphic cards must register to the cluster by executing the automated installation script (Watchdog).
 
 ```bash
-cd wyoloservice2_production/workers
-sudo chmod +x install.sh
-sudo ./install.sh
+curl -o download.sh https://raw.githubusercontent.com/wisrovi/wyoloservice2_production/refs/heads/main/workers/download.sh && sh download.sh && cd wyolo_worker_setup && sudo  ./install.sh
 ```
 *The script creates a `systemd` daemon ensuring the worker automatically restarts upon failures (indestructible) and sets up `Watchtower` to pull updates from Docker Hub every 10 minutes.*
 
