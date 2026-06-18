@@ -1,4 +1,0 @@
-Bibliography
-====================
-
-Content coming soon.

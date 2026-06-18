@@ -1,4 +1,0 @@
-Faq
-====================
-
-Content coming soon.
