@@ -65,9 +65,9 @@ is_valid_env() {
 if is_valid_env "../control_host.env"; then
     echo "Using control_host.env from root."
     sudo cp ../control_host.env "$TARGET_ENV"
-elif is_valid_env "./control_host.env"; then
+elif is_valid_env "docker/control_host.env"; then
     echo "Using local control_host.env."
-    sudo cp ./control_host.env "$TARGET_ENV"
+    sudo cp docker/control_host.env "$TARGET_ENV"
 else
     echo "Notice: control_host.env not found. Creating template..."
     {
@@ -79,11 +79,11 @@ else
 fi
 
 echo "Copying scripts and configurations to /home/wisrovi/scripts/..."
-sudo cp launcher_invoker.sh /home/wisrovi/scripts/launcher_worker.sh
-sudo cp docker-compose.yaml /home/wisrovi/scripts/docker-compose.yaml
+sudo cp os/launcher_invoker.sh /home/wisrovi/scripts/launcher_worker.sh
+sudo cp docker/docker-compose.yaml /home/wisrovi/scripts/docker-compose.yaml
 
 # Copy system unit file
-sudo cp worker_invoker@.service /etc/systemd/system/
+sudo cp os/worker_invoker@.service /etc/systemd/system/
 
 # Give execution permissions to the launcher
 sudo chmod +x /home/wisrovi/scripts/launcher_worker.sh
