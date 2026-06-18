@@ -35,10 +35,17 @@ services:
       --loglevel=info --concurrency=1 --prefetch-multiplier=1 -Ofair
       --max-tasks-per-child=1 --max-memory-per-child=250000
       --without-gossip --without-mingle --without-heartbeat
-    networks:
-      - train_service
 
-networks:
-  train_service:
-    name: train_service
-    external: true
+
+  watchtower:
+    image: containrrr/watchtower
+    restart: always
+    environment:
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_POLL_INTERVAL=300
+      - WATCHTOWER_CLEANUP=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+

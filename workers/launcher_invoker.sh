@@ -33,14 +33,29 @@ echo "Assigned core: $CORE_ASSIGNED"
 # Enter the directory where docker-compose.yaml is located
 cd /home/wisrovi/scripts/ || exit
 
-# Clean previous containers if they exist with the same project name
 # Use the worker name as project name to avoid collisions
 PROJECT_NAME="invoker_${WORKER_NAME//./_}"
+
+cleanup() {
+    echo "Signal received. Stopping and removing containers gracefully..."
+    docker-compose -p "$PROJECT_NAME" down
+    exit 0
+}
+
+# Catch termination signals from systemd
+trap cleanup SIGTERM SIGINT
 
 # Re-create network if it doesn't exist (silent)
 docker network create train_service 2>/dev/null || true
 
-# Execute compose
-# --remove-orphans to clean services no longer in the yaml
-# No -d so Systemd can monitor the process
-docker-compose -p "$PROJECT_NAME" up --remove-orphans
+echo "Starting Watchdog loop... (Monitoring containers every 30 seconds)"
+# --- 3. WATCHDOG LOOP ---
+while true; do
+    # Run in detached mode. If a container was deleted or stopped, this brings it back up.
+    # It runs silently to avoid spamming the systemd journal.
+    docker-compose -p "$PROJECT_NAME" up -d --remove-orphans > /dev/null 2>&1
+    
+    # Sleep in background and wait allows the trap to interrupt the sleep instantly
+    sleep 30 &
+    wait $!
+done
