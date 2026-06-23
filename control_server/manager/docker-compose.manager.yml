@@ -1,6 +1,6 @@
 services:
   manager_study:
-    image: wisrovi/train_service:manager_orchestrator_v1.0.0
+    image: wisrovi/train_service:manager_orchestrator_v1.1.0
     restart: always
     hostname: NAS_Train_service    
     env_file:

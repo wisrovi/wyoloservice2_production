@@ -2,7 +2,7 @@ version: '3.8'
 
 services:    
   ui:
-    image: wisrovi/train_service:w_darwin_ops_frontend_v1.0.0
+    image: wisrovi/train_service:w_darwin_ops_frontend_v1.1.0
     ports:
       - "23432:4173"
     environment:
@@ -19,7 +19,7 @@ services:
 
 
   api:
-    image: wisrovi/train_service:api_server_v1.0.0
+    image: wisrovi/train_service:api_server_v1.1.0
     container_name: control_server-fastapi-1
     ports:
       - "23442:8000"
