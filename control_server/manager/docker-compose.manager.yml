@@ -1,6 +1,9 @@
 services:
   manager_study:
     image: wisrovi/train_service:manager_orchestrator_v1.1.0
+    build:
+      context: ../../../wyoloservice2_manager
+      dockerfile: app/Dockerfile
     restart: always
     hostname: NAS_Train_service    
     env_file:
@@ -12,6 +15,8 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    volumes:
+      - /home/wisrovi/Documents/train_service_2/wyoloservice2_manager/app:/app/app
     networks:
       - control_network
 

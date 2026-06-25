@@ -3,6 +3,8 @@ version: '3.8'
 services:
   worker:
     image: wisrovi/train_service:worker_invoker_v1.1.0
+    build:
+      context: ../../../wyoloservice2_invoker/app
     container_name: wyolo_invoker_${WORKER_NAME}
     hostname: wyolo_invoker_${WORKER_NAME}
     restart: always
@@ -22,6 +24,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/wyolo/request:/wyolo/worker/request
       - /home/wyolo/train_service_results:/home/wyolo/train_service_results
+      - /home/wisrovi/Documents/train_service_2/wyoloservice2_invoker/app:/app
     labels:
       - "autoheal=true"
       - "com.centurylinklabs.watchtower.enable=true"
