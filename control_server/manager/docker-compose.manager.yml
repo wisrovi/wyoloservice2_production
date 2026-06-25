@@ -15,8 +15,8 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    volumes:
-      - /home/wisrovi/Documents/train_service_2/wyoloservice2_manager/app:/app/app
+#    volumes:
+#      - /home/wisrovi/Documents/train_service_2/wyoloservice2_manager/app:/app/app
     networks:
       - control_network
 

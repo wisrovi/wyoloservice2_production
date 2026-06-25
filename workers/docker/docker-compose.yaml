@@ -24,7 +24,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/wyolo/request:/wyolo/worker/request
       - /home/wyolo/train_service_results:/home/wyolo/train_service_results
-      - /home/wisrovi/Documents/train_service_2/wyoloservice2_invoker/app:/app
+#      - /home/wisrovi/Documents/train_service_2/wyoloservice2_invoker/app:/app
     labels:
       - "autoheal=true"
       - "com.centurylinklabs.watchtower.enable=true"
