@@ -10,4 +10,5 @@ train:
   data: /datasets/classification/colorball.v8i.multiclass/
   epochs: 2
   imgsz: 640
+  device: 0
 type: yolo
