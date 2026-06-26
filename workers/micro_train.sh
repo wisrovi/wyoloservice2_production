@@ -86,9 +86,9 @@ docker run "${DOCKER_RUN_ARGS[@]}" \
   --hostname default_user \
   --privileged \
   --network host \
-  --shm-size=16g \
-  --cpus=8 \
-  --memory=24g \
+  --shm-size=12g \
+  --cpus=4 \
+  --memory=8g \
   --cap-add=SYS_ADMIN \
   --cap-add=DAC_READ_SEARCH \
   --cap-add=NET_ADMIN \
