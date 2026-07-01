@@ -62,7 +62,8 @@ done
 # Path resolution, automatic copy, and validation
 if [[ "$BASH_MODE" == false ]]; then
     # Check if the configuration path is external to the expected directories
-    if [[ "$CONFIG_FILE" != /wyolo/worker/request/* && "$CONFIG_FILE" != /home/wyolo/request/* ]]; then
+    # We skip checks for /examples/ since those are inside the container
+    if [[ "$CONFIG_FILE" != /wyolo/worker/request/* && "$CONFIG_FILE" != /home/wyolo/request/* && "$CONFIG_FILE" != /examples/* ]]; then
         if [[ ! -f "$CONFIG_FILE" ]]; then
             echo "ERROR: External config file not found: $CONFIG_FILE" >&2
             exit 1
@@ -92,12 +93,15 @@ if [[ "$BASH_MODE" == false ]]; then
         HOST_CONFIG="/home/wyolo/request/${CONFIG_FILE#/wyolo/worker/request/}"
     elif [[ "$CONFIG_FILE" == /home/wyolo/request/* ]]; then
         HOST_CONFIG="$CONFIG_FILE"
+    elif [[ "$CONFIG_FILE" == /examples/* ]]; then
+        # It's an internal path, we don't need to validate it on the host
+        HOST_CONFIG=""
     else
         HOST_CONFIG="$CONFIG_FILE"
     fi
 
-    # Validate config file exists on host
-    if [[ ! -f "$HOST_CONFIG" ]]; then
+    # Validate config file exists on host, unless it's an internal path
+    if [[ -n "$HOST_CONFIG" && ! -f "$HOST_CONFIG" ]]; then
         echo "ERROR: Config file not found: $HOST_CONFIG" >&2
         exit 1
     fi
@@ -107,6 +111,8 @@ fi
 if [[ "$CONFIG_FILE" == /home/wyolo/request/* ]]; then
     CONTAINER_CONFIG="/wyolo/worker/request/${CONFIG_FILE#/home/wyolo/request/}"
 elif [[ "$CONFIG_FILE" == /wyolo/worker/request/* ]]; then
+    CONTAINER_CONFIG="$CONFIG_FILE"
+elif [[ "$CONFIG_FILE" == /examples/* ]]; then
     CONTAINER_CONFIG="$CONFIG_FILE"
 else
     CONTAINER_CONFIG="$CONFIG_FILE"
