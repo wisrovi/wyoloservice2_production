@@ -16,7 +16,7 @@ RAM_GB="8"
 SHM_GB="12"
 
 # Samba credentials
-CONTROL_HOST="192.168.10.252"
+CONTROL_HOST="${CONTROL_HOST:-192.168.1.137}"
 CIFS_USER="wisrovi"
 CIFS_PASS="wyoloservice"
 
@@ -135,12 +135,12 @@ if [[ "$BASH_MODE" == true ]]; then
     CMD="zsh"
     DOCKER_RUN_ARGS=(--rm -it --name wyolo_executor_test)
 else
-    CMD="nvidia-smi && echo \"[EXECUTOR] Starting mount...\" && /usr/local/bin/mount-cifs.sh && echo \"[EXECUTOR] Mount OK. Starting training...\" && python main.py --file $CONTAINER_CONFIG"
+    CMD="nvidia-smi && echo \"[EXECUTOR] Starting mount...\" && /usr/local/bin/mount-cifs.sh && echo \"[EXECUTOR] Mount OK. Starting training...\" && python main.py --file \"$CONTAINER_CONFIG\""
 fi
 
 # Execute Docker container
 docker run "${DOCKER_RUN_ARGS[@]}" \
-  --pull always \
+  --pull missing \
   --hostname default_user \
   --privileged \
   --network host \
