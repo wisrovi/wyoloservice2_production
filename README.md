@@ -178,6 +178,19 @@ curl -X GET "http://<MASTER_IP>:23442/study/STUDY-UUID"
 curl -X POST "http://<MASTER_IP>:23442/study/STUDY-UUID/cancel"
 ```
 
+### 3. Visualizing Studies with Optuna Dashboard
+
+Optuna stores hyperparameter trials data inside the PostgreSQL database. Researchers can start the visual **Optuna Dashboard** to analyze optimization graphs, parameters importance, and trials history:
+
+```bash
+# Install the Optuna Dashboard package
+pip install optuna-dashboard
+
+# Start the dashboard pointing to the PostgreSQL container port 23436
+optuna-dashboard postgresql://postgres:postgres@<MASTER_IP>:23436/wyoloservice --port 23437
+```
+Once started, navigate to `http://<MASTER_IP>:23437` to interact with optimization plots.
+
 ---
 
 ## ⚙️ Config Template (`base_config.yaml`)
@@ -378,6 +391,7 @@ Below is a quick reference mapping of the cluster ports exposed on the Master No
 | **FastAPI Gateway (API)** | `23442` | HTTP / REST API | `http://<MASTER_IP>:23442/health` |
 | **MLflow Server** | `23435` | HTTP / Experiments | `http://<MASTER_IP>:23435` |
 | **PostgreSQL Database** | `23436` | TCP / Optuna Backend | `postgresql://postgres:postgres@<MASTER_IP>:23436/wyoloservice` |
+| **Optuna Dashboard** | `23437` | HTTP / Optimization UI | `http://<MASTER_IP>:23437` |
 | **Redis Broker** | `23438` | TCP / Celery Queues | `redis://<MASTER_IP>:23438/0` |
 | **MinIO Console** | `23448` | HTTP / Storage UI | `http://<MASTER_IP>:23448` |
 | **MinIO S3 Endpoint** | `23449` | HTTP / S3 API | `http://<MASTER_IP>:23449` |
