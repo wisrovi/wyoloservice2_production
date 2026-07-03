@@ -233,7 +233,7 @@ chmod +x micro_train.sh
 
 # Test 2: Electronics Component Object Detection
 # Purpose: Validates bounding box detection pipeline. Results are logged in MLflow under study name "component_detection" (Experiment 3).
-./micro_train.sh --config "/examples/Deteksi komponen elektronik.v1i.yolov8/base_config.yaml" --gpu 80 --cpu 12 --ram 40 --shm 24
+./micro_train.sh --config /examples/Deteksi_komponen_elektronik.v1i/base_config.yaml --gpu 80 --cpu 12 --ram 40 --shm 24
 
 # Test 3: Architectural Floor Plan Instance Segmentation
 # Purpose: Validates polygon instance segmentation pipeline. Results are logged in MLflow under study name "architecture_segmentation" (Experiment 4).
