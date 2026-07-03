@@ -116,20 +116,29 @@ curl -o download.sh https://raw.githubusercontent.com/wisrovi/wyoloservice2_prod
 
 ### Step 3: Quick Local Validation (Micro Train Tests)
 
-Once a worker node is installed, you can perform quick, direct training validation checks on the GPU using the 3 example datasets. Download the validation script and run the respective test commands:
+Once a worker node is installed, you can perform quick, direct training validation checks on the GPU using the 3 example datasets. The purpose of these tests is to verify the correct local execution of the pipeline (verifying GPU driver compatibility, dataset path accessibility over Samba CIFS mount, S3 MinIO storage uploads, and MLflow logging) without submitting Celery tasks.
+
+Upon successful completion of the tests:
+- The trained models, S3 artifacts (`best.pt`, confusion matrices, evaluation curves), and a raw metrics results file `results.json` are written to the master MinIO storage.
+- Real-time quantitative training statistics can be observed in the **MLflow Dashboard** (`http://<MASTER_IP>:23435`).
+
+Download the validation script and run the respective test commands:
 
 ```bash
 # Download and prepare the micro train script
 wget https://raw.githubusercontent.com/wisrovi/wyoloservice2_production/refs/heads/main/workers/micro_train.sh
 chmod +x micro_train.sh
 
-# Test 1: Color Ball Classification
+# Test 1: Color Ball Image Classification
+# Purpose: Validates classification pipeline. Results are logged in MLflow under study name "color_ball_classification" (Experiment 2).
 ./micro_train.sh --config /examples/colorball.v8i.multiclass/base_config.yaml --gpu 80 --cpu 12 --ram 40 --shm 24
 
-# Test 2: Electronics Component Detection
+# Test 2: Electronics Component Object Detection
+# Purpose: Validates bounding box detection pipeline. Results are logged in MLflow under study name "component_detection" (Experiment 3).
 ./micro_train.sh --config "/examples/Deteksi komponen elektronik.v1i.yolov8/base_config.yaml" --gpu 80 --cpu 12 --ram 40 --shm 24
 
-# Test 3: Architectural Plan Segmentation
+# Test 3: Architectural Floor Plan Instance Segmentation
+# Purpose: Validates polygon instance segmentation pipeline. Results are logged in MLflow under study name "architecture_segmentation" (Experiment 4).
 ./micro_train.sh --config /examples/ArchitecturePlan/base_config.yaml --gpu 80 --cpu 12 --ram 40 --shm 24
 ```
 
