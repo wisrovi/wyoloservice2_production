@@ -85,6 +85,33 @@ graph TD
 
 ---
 
+## 📦 MinIO S3 Bucket & Artifacts Structure
+
+All training runs automatically stream weights, metrics, and configurations to the MinIO object storage. The files are organized within the `mlflow-artifacts` bucket under the following prefix tree:
+
+```
+mlflow-artifacts/
+└── <experiment_id>/              # Optuna study database ID (e.g. 2, 3, 4)
+    └── <run_uuid>/               # Unique MLflow Run ID
+        ├── artifacts/            # Output assets folder
+        │   ├── results.json      # Final accuracy metric file, e.g. {"accuracy": 0.7059}
+        │   ├── model_weights/    # Contains PyTorch trained weights
+        │   │   ├── best.pt       # Best epoch weights checkpoint
+        │   │   └── last.pt       # Last epoch weights checkpoint
+        │   ├── evaluation_metrics/ # Performance graphs
+        │   │   ├── F1_curve.png
+        │   │   ├── PR_curve.png
+        │   │   ├── confusion_matrix.png
+        │   │   └── results.csv
+        │   └── training_artifacts/ # Run config copies
+        │       ├── base_config.yaml
+        │       └── data.yaml
+        ├── meta.yaml             # MLflow run metadata
+        └── metrics/              # Live streamed metrics history
+```
+
+---
+
 ## 🚀 Installation & Deployment Guide
 
 ### Prerequisites
