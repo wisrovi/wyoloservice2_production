@@ -216,6 +216,50 @@ metadata:
 
 ---
 
+## 🎛️ Advanced Optuna Sweeper Tuning Guide
+
+The clúster's Optuna Manager parses the `sweeper` block in the YAML file to build dynamic search spaces for Genetic Algorithms and hyperparameter mutation loops. Below is the configuration syntax for customizing tuning strategies.
+
+### 1. Optimization Directions
+* **`direction: maximize`** (Default): Use for metrics where higher values are better, such as `metrics/accuracy_top1` or `metrics/mAP50`.
+* **`direction: minimize`**: Use for loss values, such as `val/box_loss` or `val/cls_loss`.
+
+### 2. Available Samplers (`sweeper.sampler`)
+* **`TPESampler`** (Recommended): Tree-structured Parzen Estimator. Fits a probability model to history and selects parameters likely to maximize fitness.
+* **`RandomSampler`**: Selects random hyperparameter combinations. Good for uniform initial sweeps.
+* **`GridSampler`**: Exclusively sweeps discrete choices defined in the search space.
+
+### 3. Hyperparameter Bounds & Types (`search_space`)
+Define bounds inside `sweeper.search_space.train` or `sweeper.search_space.model` to control parameter sampling types:
+
+* **Categorical / Choices (Discrete)**
+  Samples from a defined list of values.
+  ```yaml
+  model: ["choice", "yolov8n.pt", "yolov8s.pt", "yolov8m.pt"]
+  train:
+    imgsz: ["choice", 416, 512, 640]
+  ```
+* **Uniform Float (Continuous)**
+  Samples float values uniformly between a minimum and maximum bound.
+  ```yaml
+  train:
+    momentum: ["uniform", 0.8, 0.99]
+  ```
+* **Log-Uniform Float (Continuous Exponential)**
+  Samples float values exponentially. Essential for learning rates (`lr0`, `lrf`) and weight decays.
+  ```yaml
+  train:
+    lr0: ["loguniform", 1e-5, 1e-2]
+  ```
+* **Uniform Integer (Discrete Range)**
+  Samples integer numbers between bounds.
+  ```yaml
+  train:
+    epochs: ["int", 50, 200]
+  ```
+
+---
+
 ## 🤖 Model Context Protocol (MCP) Integration (`wyoloservice-mcp`)
 
 The ecosystem provides a native Model Context Protocol (MCP) server named `wyoloservice-mcp` (repository: `wyoloservice2_mcp`). This server enables LLM agents (like Claude Desktop, Antigravity, or Cursor) to act as autonomous operators on your cluster—validating remote paths, compiling configs, launching studies, and tracking metrics.
