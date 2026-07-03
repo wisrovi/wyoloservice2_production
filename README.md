@@ -114,6 +114,25 @@ curl -o download.sh https://raw.githubusercontent.com/wisrovi/wyoloservice2_prod
 2. Configures **Watchtower**, which runs in the background and checks every 10 minutes for newly built images on Docker Hub to update them without cluster interruption.
 3. Sets up CIFS (Samba) mounts at `/wyolo/control_server` and `/wyolo/worker` to allow fast read/write access to configurations and datasets.
 
+### Step 3: Quick Local Validation (Micro Train Tests)
+
+Once a worker node is installed, you can perform quick, direct training validation checks on the GPU using the 3 example datasets. Download the validation script and run the respective test commands:
+
+```bash
+# Download and prepare the micro train script
+wget https://raw.githubusercontent.com/wisrovi/wyoloservice2_production/refs/heads/main/workers/micro_train.sh
+chmod +x micro_train.sh
+
+# Test 1: Color Ball Classification
+./micro_train.sh --config /examples/colorball.v8i.multiclass/base_config.yaml --gpu 80 --cpu 12 --ram 40 --shm 24
+
+# Test 2: Electronics Component Detection
+./micro_train.sh --config "/examples/Deteksi komponen elektronik.v1i.yolov8/base_config.yaml" --gpu 80 --cpu 12 --ram 40 --shm 24
+
+# Test 3: Architectural Plan Segmentation
+./micro_train.sh --config /examples/ArchitecturePlan/base_config.yaml --gpu 80 --cpu 12 --ram 40 --shm 24
+```
+
 ---
 
 ## 📖 User Guide & Operations
@@ -169,7 +188,7 @@ sweeper:
   direction: maximize       # Optimize direction for target metric
   study_name: "example_experiment"
   fitness: "metrics/mAP50"  # Target metric to optimize
-  tune: true                # Enable parameter tuning search
+  tune: false                # Not Enable parameter tuning search
   sampler: "TPESampler"
   n_trials: 10              # Number of trials (mutations)
   search_space:
