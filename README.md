@@ -1,65 +1,65 @@
-# 🧠 NeuralForgeAI & WDarwin Ops - Guía de Usuario y Ecosystem Hub
+# 🧠 NeuralForgeAI & WDarwin Ops - User & Production Deployment Guide
 
 ![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
 ![Status](https://img.shields.io/badge/status-production-success.svg)
 ![Docker](https://img.shields.io/badge/docker-ready-2496ED.svg?logo=docker)
 
-**NeuralForgeAI** (y su panel de control **WDarwin Ops**) es una plataforma de nivel empresarial diseñada para la **orquestación distribuida, entrenamiento escalable y optimización evolutiva de hiperparámetros (Algoritmos Genéticos)** orientada a arquitecturas avanzadas de visión artificial, específicamente **YOLOv8**, **YOLOv11** y **YOLO26**.
+**NeuralForgeAI** (and its control panel **WDarwin Ops**) is an enterprise-grade platform designed for **distributed orchestration, scalable training, and evolutionary hyperparameter optimization (Genetic Algorithms)** targeting advanced computer vision architectures, specifically **YOLOv8**, **YOLOv11**, and **YOLO26**.
 
-El objetivo central de este ecosistema es desacoplar por completo la capa de interfaz de usuario de la capa de cómputo pesado. Permite a investigadores y desarrolladores enviar configuraciones simples en formato YAML a un clúster centralizado, el cual se encarga de manera autónoma del balanceo de carga, asignación de prioridades, evolución de modelos (mutaciones a través de algoritmos evolutivos) y registro estructurado de métricas.
+The core objective of this system is to decouple the user interface layer from the heavy-compute layer. It enables researchers and developers to submit simple YAML configurations to a centralized cluster. The cluster autonomously handles load balancing, priority assignment, model evolution (mutations through genetic algorithms), and structured metric logging.
 
 ---
 
-## 🛠️ Stack Tecnológico
+## 🛠️ Tech Stack
 
-El proyecto está construido sobre una infraestructura robusta y de alto rendimiento:
+The project is built upon a robust, high-performance infrastructure:
 
 ### Frontend (UI)
-*   **Núcleo:** React 19, TypeScript
-*   **Compilador:** Vite, Node.js (18-alpine)
-*   **Estilos:** Tailwind CSS (v3.4, Native PostCSS)
-*   **Iconos:** Lucide React (Flame, Activity, Rocket, etc.)
+*   **Core:** React 19, TypeScript
+*   **Build System:** Vite, Node.js (18-alpine)
+*   **Styling:** Tailwind CSS (v3.4, Native PostCSS)
+*   **Icons:** Lucide React (Flame, Activity, Rocket, etc.)
 
-### Backend (API y Orquestación)
-*   **Gateway API:** FastAPI, Python 3.10, Uvicorn (RESTful Endpoints)
-*   **Cola de Tareas Distribuidas:** Celery
-*   **Optimización de Hiperparámetros:** Optuna (algoritmos evolutivos, TPESampler)
-*   **Telemetría del Clúster:** `psutil` (monitoreo de hardware en tiempo real)
+### Backend (API & Orchestration)
+*   **API Gateway:** FastAPI, Python 3.10, Uvicorn (RESTful Endpoints)
+*   **Task Queue:** Celery
+*   **Hyperparameter Optimization:** Optuna (evolutionary algorithms, TPESampler)
+*   **System Telemetry:** `psutil` (real-time hardware monitoring)
 
-### Infraestructura y Datos
-*   **Broker de Mensajes / Estado:** Redis
-*   **Base de Datos Relacional:** PostgreSQL (para albergar los estudios de Optuna en el puerto `23436`)
-*   **Almacenamiento de Artefactos:** MinIO (S3-Compatible en el puerto `23448`)
-*   **Seguimiento de Experimentos:** MLflow (puerto `23435`)
-*   **Despliegue y Resiliencia:** Docker Compose, Systemd (servicios Watchdog), Watchtower (actualizaciones automáticas)
+### Infrastructure & Data
+*   **Message Broker / State:** Redis
+*   **Relational Database:** PostgreSQL (to house Optuna studies on port `23436`)
+*   **Artifacts Storage:** MinIO (S3-Compatible on port `23448`)
+*   **Experiment Tracking:** MLflow (port `23435`)
+*   **Deployment & Resilience:** Docker Compose, Systemd (Watchdog services), Watchtower (auto-updates)
 
 ---
 
-## 🧩 Partes del Proyecto (Microservicios)
+## 🧩 Project Components (Microservices)
 
-El ecosistema está dividido en 5 repositorios especializados que interactúan de forma asíncrona:
+The ecosystem is divided into 5 specialized repositories that interact asynchronously:
 
-| Microservicio | Ubicación Local | Descripción y Propósito |
+| Microservice | Local Directory | Description & Purpose |
 | :--- | :--- | :--- |
-| **Production Hub** | `wyoloservice2_production` | **(Este repositorio)** Punto de entrada principal. Contiene las pilas de Docker Compose del servidor maestro, los scripts de instalación de nodos GPU y la configuración de red global. |
-| **Control Server (Máquina Master)** | `wyoloservice2_control_server` | Despliega los cimientos de datos compartidos: Redis (mensajería), PostgreSQL (estudios de Optuna), MinIO (pesos y datasets) y MLflow (métricas cuantitativas). |
-| **API Gateway & UI** | `NeuralForgeAI` | Alberga el servidor FastAPI (`/api`, puerto `23442`) y el panel de control React (`/UI`, puerto `23432`) que sincroniza el estado en tiempo real. |
-| **Study Manager** | `wyoloservice2_manager` | Consumidor Celery. Escucha la cola `managers`, lee el espacio de búsqueda del YAML, crea estudios y trials en Optuna, evalúa fitness y orquesta las mutaciones genéticas. |
-| **Worker Invoker (Máquinas GPU)** | `wyoloservice2_invoker` | Ejecutor de tareas pesadas en las GPU de los nodos de cómputo. Descarga datos, monta Samba, lanza el contenedor efímero del worker YOLO, valida métricas y las reporta a S3 y MLflow. |
+| **Production Hub** | `wyoloservice2_production` | **(This repository)** The main entry point. Contains the Master node Docker Compose stacks, cluster topology, and worker GPU node setup files. |
+| **Control Server (Master Host)** | `wyoloservice2_control_server` | Deploys the shared data foundation: Redis (queues), PostgreSQL (Optuna DB), MinIO (weights and datasets), and MLflow (quantitative metrics). |
+| **API Gateway & UI** | `NeuralForgeAI` | Houses both the FastAPI server (`/api` on port `23442`) and the WDarwin Ops React panel (`/UI` on port `23432`) syncing the live cluster state. |
+| **Study Manager** | `wyoloservice2_manager` | Celery consumer. Listens to the `managers` queue, parses YAML search spaces, creates Optuna studies/trials, computes fitness, and orchestrates genetic mutations. |
+| **Worker Invoker (GPU Nodes)** | `wyoloservice2_invoker` | Heavy-execution GPU worker. Downloads datasets, mounts Samba shares, spawns ephemeral YOLO training docker containers, validates metrics, and uploads results. |
 
 ---
 
-## 🗺️ Arquitectura del Sistema
+## 🗺️ System Architecture
 
 ```mermaid
 graph TD
-    Client((Investigador / Navegador)) -->|HTTP/REST| UI[WDarwin Ops React UI :23432]
+    Client((Researcher / Browser)) -->|HTTP/REST| UI[WDarwin Ops React UI :23432]
     Client -->|HTTP/REST| API[FastAPI Gateway :23442]
-    UI -->|Sincronización Dinámica| API
+    UI -->|Dynamic Sync| API
     
     subgraph "Control Plane (Master Node)"
-        API -->|Cola YAML| Redis[(Redis Broker :23438)]
-        API -->|Telemetría| Redis
+        API -->|YAML Queue| Redis[(Redis Broker :23438)]
+        API -->|Telemetry| Redis
         Redis <--> Manager[Celery Manager Optuna]
         Manager <--> PostgreSQL[(PostgreSQL :23436)]
         MLflow[MLflow Server :23435] <--> PostgreSQL
@@ -72,104 +72,104 @@ graph TD
         WorkerN[Invoker GPU N]
     end
 
-    Manager -->|Dispone Trials| Redis
-    Redis -->|Consumen de la Cola| Worker1
-    Redis -->|Consumen de la Cola| Worker2
-    Redis -->|Consumen de la Cola| WorkerN
+    Manager -->|Dispatches Trials| Redis
+    Redis -->|Consumes Queue| Worker1
+    Redis -->|Consumes Queue| Worker2
+    Redis -->|Consumes Queue| WorkerN
     
-    Worker1 -->|Logs de Epocas/Pérdidas| MLflow
-    Worker1 -->|Sube pesos best.pt / results.json| MinIO
+    Worker1 -->|Logs Epochs/Loss| MLflow
+    Worker1 -->|Uploads best.pt / results.json| MinIO
 ```
 
 ---
 
-## 🚀 Guía de Instalación
+## 🚀 Installation & Deployment Guide
 
-### Requisitos Previos
-*   Docker y Docker Compose v2.
-*   Drivers de NVIDIA y `nvidia-container-toolkit` instalado en los nodos GPU.
-*   Acceso a red entre los nodos Workers y el nodo Maestro (puertos expuestos para PostgreSQL, Redis, FastAPI, MLflow y MinIO).
+### Prerequisites
+*   Docker and Docker Compose v2.
+*   NVIDIA Drivers and `nvidia-container-toolkit` installed on GPU nodes.
+*   Network access between GPU Workers and the Master Host (exposed ports for PostgreSQL, Redis, FastAPI, MLflow, and MinIO).
 
-### Paso 1: Configuración e Instalación del Nodo Master (Control Plane)
-1. Sitúate en el directorio de producción:
+### Step 1: Master Node Installation (Control Plane)
+1. Navigate to the control server production directory:
    ```bash
    cd wyoloservice2_production/control_server
    ```
-2. Configura las variables de entorno en el archivo `control_host.env` (asigna la IP pública/local del maestro, credenciales de base de datos y llaves de acceso S3).
-3. Levanta todos los servicios utilizando el Makefile unificado:
+2. Configure the environment variables in `control_host.env` (assign the master's IP, database credentials, and S3 access keys).
+3. Start all services using the unified Makefile:
    ```bash
    make start_all
    ```
-   *Esto creará la red `control_network`, iniciará Redis/PostgreSQL/MinIO/MLflow (`make start_env`), compilará y levantará la API y el Frontend (`make start_api`), e iniciará el administrador Celery de Optuna (`make start_manager`).*
+   *This command creates the `control_network`, starts Redis/Postgres/MinIO/MLflow (`make start_env`), compiles and runs the FastAPI API & Frontend (`make start_api`), and boots the Celery Optuna manager (`make start_manager`).*
 
-### Paso 2: Configuración e Instalación de Nodos GPU (Workers)
-En cada máquina de cómputo que posea una tarjeta gráfica NVIDIA, ejecuta la instalación automatizada del Invoker:
+### Step 2: Compute Nodes Installation (GPU Workers)
+On every machine equipped with an NVIDIA GPU, execute the automated Invoker installation:
 ```bash
 curl -o download.sh https://raw.githubusercontent.com/wisrovi/wyoloservice2_production/refs/heads/main/workers/download.sh && sh download.sh && cd wyolo_worker_setup && sudo ./install.sh
 ```
-**¿Qué hace este script?**
-1. Configura el daemon de sistema `wyolo_worker.service` (un Watchdog de Systemd indestructible que reinicia el worker inmediatamente si sufre caídas).
-2. Configura **Watchtower**, que corre en segundo plano y comprueba cada 10 minutos si hay nuevas imágenes compiladas en Docker Hub para actualizarlas sin interrumpir el clúster.
-3. Configura los montajes CIFS (Samba) en `/wyolo/control_server` y `/wyolo/worker` para permitir lectura/escritura veloz de configuraciones y datasets.
+**What does this script do?**
+1. Sets up the `wyolo_worker.service` daemon (an indestructible Systemd Watchdog that restarts the worker immediately upon failures).
+2. Configures **Watchtower**, which runs in the background and checks every 10 minutes for newly built images on Docker Hub to update them without cluster interruption.
+3. Sets up CIFS (Samba) mounts at `/wyolo/control_server` and `/wyolo/worker` to allow fast read/write access to configurations and datasets.
 
 ---
 
-## 📖 Guía de Uso del Sistema
+## 📖 User Guide & Operations
 
-### 1. Interacción a través de la Interfaz Web (WDarwin Ops)
-*   Accede mediante tu navegador al puerto expuesto de la UI: `http://<IP_MAESTRO>:23432`.
-*   **Secciones principales:**
-    *   **Monitoreo del Clúster:** Visualiza en tiempo real el uso de CPU/GPU, memoria y almacenamiento de los nodos conectados.
-    *   **Lanzamiento de Entrenamientos:** Drag-and-drop de archivos YAML de configuración.
-    *   **Historial de Estudios:** Búsqueda rápida de tareas, inspección de trials y estado de entrenamiento.
-*   **Pruebas de Humo Integradas (Solo Administradores):**
-    *   **Basic Smoke Test (Icono Actividad ⚡):** Ejecuta un entrenamiento simulado rápido (`dry_run: true`) de 5 trials para validar que el Invoker, Redis, la API y Celery se comunican perfectamente.
-    *   **Advanced E2E Smoke Test (Icono Flama 🔥):** Lanza tres entrenamientos reales en paralelo (Clasificación, Detección y Segmentación) utilizando pesos `yolo26` en el GPU para validar la persistencia final en MinIO S3 y MLflow.
+### 1. Interacting via the Web UI (WDarwin Ops)
+*   Access the UI via your browser: `http://<MASTER_IP>:23432`.
+*   **Core Panels:**
+    *   **Cluster Telemetry:** Live monitoring of CPU/GPU load, RAM usage, and disk space on active nodes.
+    *   **Training Launcher:** Drag-and-drop YAML config uploader.
+    *   **Study History:** Search, filter, and drill down into active/completed trials.
+*   **Integrated Smoke Tests (Admin Only):**
+    *   **Basic Smoke Test (⚡ Activity Icon):** Launches a dry-run study (`dry_run: true`) with 5 trials to verify complete Celery, Redis, API, and Invoker connectivity.
+    *   **Advanced E2E Smoke Test (🔥 Flame Icon):** Launches three concurrent real GPU training runs (Classification, Detection, and Segmentation) using `yolo26` configurations to validate S3 artifact writes and MLflow tracking.
 
-### 2. Interacción Directa con la API REST (Programática)
+### 2. Interacting via the REST API
 
-#### Lanzar un Estudio de Entrenamiento:
-Envía una petición `POST` al endpoint `/train` subiendo tu archivo YAML:
+#### Submit a Training Study:
+Send a `POST` request to the `/train` endpoint with your YAML configuration:
 ```bash
-curl -X POST "http://<IP_MAESTRO>:23442/train" \
-  -F "config_file=@mi_experimento.yaml" \
+curl -X POST "http://<MASTER_IP>:23442/train" \
+  -F "config_file=@my_experiment.yaml" \
   -F "mode=public" \
   -F "priority=medium"
 ```
-*Retorna:* `{"status": "success", "study_id": "STUDY-UUID", "routing": "managers"}`
+*Response:* `{"status": "success", "study_id": "STUDY-UUID", "routing": "managers"}`
 
-#### Consultar Progreso de un Estudio:
+#### Retrieve Study Progress:
 ```bash
-curl -X GET "http://<IP_MAESTRO>:23442/study/STUDY-UUID"
+curl -X GET "http://<MASTER_IP>:23442/study/STUDY-UUID"
 ```
 
-#### Cancelar de forma Graciosa un Estudio Activo:
+#### Gracefully Cancel an Active Study:
 ```bash
-curl -X POST "http://<IP_MAESTRO>:23442/study/STUDY-UUID/cancel"
+curl -X POST "http://<MASTER_IP>:23442/study/STUDY-UUID/cancel"
 ```
 
 ---
 
-## ⚙️ Plantilla Estructurada de Configuración (`base_config.yaml`)
+## ⚙️ Config Template (`base_config.yaml`)
 
 ```yaml
-model: "yolo26n.pt"         # Arquitectura base (yolo26n.pt, yolo26n-cls.pt, yolo26n-seg.pt, etc.)
-type: "yolo"                # Tipo de framework
+model: "yolo26n.pt"         # Base architecture (yolo26n.pt, yolo26n-cls.pt, yolo26n-seg.pt)
+type: "yolo"                # Framework type
 train:
   batch: -1                 # Autotune batch size
-  data: "/examples/Deteksi komponen elektronik.v1i.yolov8/data.yaml" # Ruta absoluta del dataset
-  epochs: 5                 # Número de épocas
-  imgsz: 640                # Resolución de imágenes
-  plots: true               # Generar curvas de validación
+  data: "/examples/Deteksi komponen elektronik.v1i.yolov8/data.yaml" # Absolute dataset path
+  epochs: 5                 # Epoch count
+  imgsz: 640                # Image resolution
+  plots: true               # Generate curves and confusion matrix
 sweeper:
   version: 1
   algorithm: optuna
-  direction: maximize       # Optimizar para el fitness indicado
-  study_name: "experimento_ejemplo"
-  fitness: "metrics/mAP50"  # Métrica objetivo
-  tune: true                # Activar búsqueda hiperparamétrica
+  direction: maximize       # Optimize direction for target metric
+  study_name: "example_experiment"
+  fitness: "metrics/mAP50"  # Target metric to optimize
+  tune: true                # Enable parameter tuning search
   sampler: "TPESampler"
-  n_trials: 10              # Número de trials (mutaciones genéticas)
+  n_trials: 10              # Number of trials (mutations)
   search_space:
     train:
       lr0: [ "loguniform", 1e-5, 1e-2 ]
@@ -177,20 +177,20 @@ sweeper:
 extras:
   gpu:
     id: 0
-    limit: 0.95             # Límite de carga máxima de GPU admisible
+    limit: 0.95             # GPU load limit allocation
 metadata:
-  content: "Prueba de optimización distribuida"
+  content: "Distributed optimization test"
   author: "William Rodriguez"
-  documentation: "Evaluación de YOLO26 en detección de placas integradas."
+  documentation: "Evaluating YOLO26 detection performance."
 ```
 
 ---
 
-## 🤖 Integración con Model Context Protocol (MCP)
+## 🤖 Model Context Protocol (MCP) Integration
 
-**Model Context Protocol (MCP)** permite que agentes inteligentes basados en LLMs (como Claude Desktop, Antigravity o Cursor) interactúen de forma autónoma con el clúster de NeuralForgeAI para realizar tareas de ingeniería de modelos sin intervención humana.
+The **Model Context Protocol (MCP)** enables intelligent LLM agents (such as Claude Desktop, Antigravity, or Cursor) to act as autonomous operators on the NeuralForgeAI cluster.
 
-### Arquitectura de Integración MCP
+### MCP Integration Diagram
 
 ```
 ┌──────────────┐             ┌────────────┐             ┌────────────────┐
@@ -205,9 +205,9 @@ metadata:
                                                         └────────────────┘
 ```
 
-### Configuración de Servidores MCP en tu Cliente LLM
+### Configuring MCP Servers in Your Client
 
-Para permitir que tu asistente de IA lea estudios directamente de la base de datos PostgreSQL, envíe entrenamientos o cancele trials, añade los siguientes servidores MCP a tu archivo de configuración del cliente (por ejemplo, en `~/.config/Claude/claude_desktop_config.json`):
+To allow your AI assistant to query studies directly from PostgreSQL, submit training jobs, or inspect system files, add the following servers to your client configuration file (e.g., `~/.config/Claude/claude_desktop_config.json`):
 
 ```json
 {
@@ -217,7 +217,7 @@ Para permitir que tu asistente de IA lea estudios directamente de la base de dat
       "args": [
         "-y",
         "@modelcontextprotocol/server-postgres",
-        "postgresql://postgres:postgres@<IP_MAESTRO>:23436/wyoloservice"
+        "postgresql://postgres:postgres@<MASTER_IP>:23436/wyoloservice"
       ]
     },
     "neuralforge-filesystem": {
@@ -232,17 +232,17 @@ Para permitir que tu asistente de IA lea estudios directamente de la base de dat
 }
 ```
 
-### Capacidades Habilitadas para el Agente IA a través de MCP:
-1. **Acceso a Base de Datos (`neuralforge-database`):** El LLM puede escribir queries SQL para listar estudios Optuna, examinar el mejor trial completado, rastrear parámetros de mutaciones o diagnosticar fallas de entrenamiento directamente.
-2. **Inspección de Archivos (`neuralforge-filesystem`):** Permite al agente crear o editar archivos YAML de configuración, leer códigos de error en bitácoras o analizar scripts de despliegue sobre el disco local del servidor maestro.
-3. **Control del Gateway REST (Vía APIs Externas):** Al equipar al agente con herramientas de llamadas HTTP, este puede enviar comandos POST `/train`, monitorear el clúster, o cancelar ejecuciones inestables basándose en su análisis predictivo de las curvas de pérdida reportadas en MLflow.
+### AI Agent Capabilities via MCP:
+1. **Direct Database Queries (`neuralforge-database`):** The LLM can write SQL queries to list studies, inspect the best trial parameters, track trials loss metrics, or analyze execution failures directly.
+2. **File System Operations (`neuralforge-filesystem`):** Allows the AI agent to edit/create YAML files, read error logs, or inspect configurations on the master host.
+3. **Gateway REST Calls:** If equipped with HTTP clients, the agent can issue `POST /train` requests, monitor status, and programmatically cancel training studies based on real-time metric analysis.
 
 ---
 
-## 👨‍💻 Autor
+## 👨‍💻 Author
 
 **William Steve Rodriguez Villamizar (wisrovi)**  
 *AI Leader & Solutions Architect*  
 *   [LinkedIn Profile](https://www.linkedin.com/in/wisrovi-rodriguez/)
 
-> *"Desacoplando la investigación compleja en IA y transformándola en aplicaciones industriales distribuidas y escalables."*
+> *"Decoupling complex AI research and transforming it into distributed, scalable industrial applications."*
