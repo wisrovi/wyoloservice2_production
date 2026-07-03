@@ -118,3 +118,24 @@ To ensure complete architectural alignment, below is the roadmap and planned upg
 *   **Upgrades:**
     *   Additional tools for system administration: `restart_service(service_name)`, `get_gpu_temp()`, and `view_failed_trial_traceback(trial_id)`.
     *   Enhanced natural language prompt instructions for autonomous agent pair-programming.
+
+---
+
+## 📜 Changelog & Release History
+
+### Version 2.0.0 (Current Release) - 2026-07-03
+*   **Decoupled Distributed Architecture:** Migrated from single-host execution script model (v1.0) to Celery dynamic message queue worker-invoker topologies.
+*   **Genetic Hyperparameter Tuning:** Optuna framework integration mapping trials, studies, and samplers (TPESampler/RandomSampler) to PostgreSQL database.
+*   **Model Context Protocol (MCP) Integration:** Exposed `wyoloservice-mcp` stdio FastMCP server to allow LLMs to validate datasets, generate configs, and monitor active training runs.
+*   **Fuzzy Metrics Extraction Fallback:** Implemented automatic regex fallback matching to translate standard YOLO outputs (e.g. `metrics/mAP50`) to task-specific labels (e.g. `metrics/mAP50(B)` or `metrics/mAP50(M)`).
+*   **Host mount write protections:** Automated Touch test validation at system startup on workers to preempt write permissions failures on Samba mounts.
+*   **Advanced E2E UI Smoke Tests:** Integrated basic Activity-based dry-runs and advanced E2E Flame-based YOLO26 trainings on UI.
+
+### Version 1.1.0 - 2026-05-15
+*   **FastAPI & UI Decoupling:** Separated backend endpoints from Vite/React frontend dashboard.
+*   **MLflow Real-time Tracking:** Streamed epoch statistics and validation metrics directly to MLflow.
+*   **MinIO S3 storage:** Replaced host directory local saves with S3-compatible bucket artifact uploads.
+
+### Version 1.0.0 (Initial Release) - 2026-02-10
+*   Ephemeral Docker container executor for YOLOv8 classification training.
+*   Local filesystem `/app/data/` for configuration YAML and output checkpoints.
