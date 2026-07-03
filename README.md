@@ -236,6 +236,30 @@ optuna-dashboard postgresql://postgres:postgres@<MASTER_IP>:23436/wyoloservice -
 ```
 Once started, navigate to `http://<MASTER_IP>:23437` to interact with optimization plots.
 
+### 4. Exporting & Deploying Trained Models
+
+Once a trial completes, you can retrieve the trained weights (`best.pt`) to deploy them into production applications:
+
+*   **Via WDarwin Ops (UI):** Open the studies logs explorer and download the weights directly from the browser.
+*   **Via MinIO Console (S3 Browser):** Navigate to `http://<MASTER_IP>:23448` (Username: `minioadmin`, Password: `minioadmin`). Select the `mlflow-artifacts` bucket, drill down into your `<experiment_id>/<run_uuid>/artifacts/model_weights/`, and download `best.pt`.
+*   **Programmatically (Python Boto3):**
+    ```python
+    import boto3
+
+    s3 = boto3.client(
+        's3',
+        endpoint_url='http://<MASTER_IP>:23449',
+        aws_access_key_id='minioadmin',
+        aws_secret_access_key='minioadmin'
+    )
+    # Download the best weights to your local machine
+    s3.download_file(
+        'mlflow-artifacts',
+        '<experiment_id>/<run_uuid>/artifacts/model_weights/best.pt',
+        'best.pt'
+    )
+    ```
+
 ---
 
 ## ⚙️ Config Template (`base_config.yaml`)
