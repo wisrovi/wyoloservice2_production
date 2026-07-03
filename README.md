@@ -128,6 +128,27 @@ When the Celery Manager generates a trial mutation, it routes the execution payl
 ### 3. Worker Concurrency Settings
 Worker-invoker nodes pull tasks using a concurrency cap to prevent out-of-memory errors on shared GPUs. Each worker daemon is configured by default with `--concurrency=1` to ensure strict single-GPU allocation per trial, though this can be scaled up on multi-GPU machines.
 
+### 4. Optuna Study Lifecycle State Machine
+Below is the status transition logic during the lifecycle of an optimization sweep:
+
+```mermaid
+stateDiagram-v2
+    [*] --> PENDING : Submit YAML config
+    PENDING --> RUNNING : Celery Manager pulls task
+    state RUNNING {
+        [*] --> MutateParams : Optuna suggests next trial parameters
+        MutateParams --> DispatchWorker : Queue trial task (e.g. gpus_medium)
+        DispatchWorker --> TrainYOLO : Run epoch loops on GPU Worker
+        TrainYOLO --> LogMetrics : Write metrics to MLflow & MinIO
+        LogMetrics --> MutateParams : Check if trials_count < n_trials
+        LogMetrics --> [*] : trials_count == n_trials reached
+    }
+    RUNNING --> COMPLETED : All trials finish successfully
+    RUNNING --> CANCELLED : POST /study/UUID/cancel (triggers study.stop)
+    COMPLETED --> [*]
+    CANCELLED --> [*]
+```
+
 ---
 
 ## 🚀 Installation & Deployment Guide
@@ -422,6 +443,29 @@ The ecosystem provides a native Model Context Protocol (MCP) server named `wyolo
                             │ REST API Gateway  │                                   │ Docker Exec (GPU) │
                             │ (POST /train etc) │                                   │ (Mounts CIFS E2E) │
                             └───────────────────┘                                   └───────────────────┘
+```
+
+### Agentic MCP Tool Invocation Sequence
+Below is the communication sequence when an LLM agent uses the `wyoloservice-mcp` toolset:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as User / Researcher
+    participant Agent as LLM Agent (Claude/Antigravity)
+    participant MCP as wyoloservice-mcp Server
+    participant API as FastAPI REST Gateway
+    participant Redis as Redis Queue
+
+    User->>Agent: "Launch training with my config"
+    Agent->>MCP: Call validate_dataset_advanced(path)
+    MCP-->>Agent: Dataset verified successfully
+    Agent->>MCP: Call launch_training(yaml_path)
+    MCP->>API: POST /train (YAML payload)
+    API->>Redis: Enqueue study job
+    API-->>MCP: Return {"status": "success", "study_id": "STUDY-UUID"}
+    MCP-->>Agent: Config generated & Study launched: STUDY-UUID
+    Agent-->>User: "Your sweep is running under STUDY-UUID! I'll monitor it."
 ```
 
 ### Installation
