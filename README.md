@@ -361,7 +361,7 @@ Set the fitness key to optimize specific performance values. The worker translat
 
 ### 5. Recommended Tuning Hyperparameters (YOLO Settings)
 
-When building your search space, you can customize and optimize these core training and data augmentation parameters directly from the official Ultralytics YOLO specifications:
+When building your search space, you can customize and optimize these core training and data augmentation parameters directly from the official [Ultralytics YOLO Training Settings](https://docs.ultralytics.com/es/modes/train#train-settings) specifications:
 
 #### Training Optimization Parameters
 *   **`lr0`** (Float, default `0.01`): Initial learning rate (e.g. tune between `[ "loguniform", 1e-5, 1e-1 ]`).
