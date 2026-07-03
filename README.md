@@ -260,6 +260,17 @@ curl -X GET "http://<MASTER_IP>:23442/study/STUDY-UUID"
 curl -X POST "http://<MASTER_IP>:23442/study/STUDY-UUID/cancel"
 ```
 
+#### Gateway HTTP Status Codes:
+The API Gateway follows standard REST HTTP status reporting:
+
+| Status Code | Description | Diagnostic Solution |
+| :---: | :--- | :--- |
+| **`200 OK`** | Request processed successfully (returned metrics data or successfully canceled running study). | No action required. |
+| **`201 Created`** | Configuration validated and study successfully enqueued in Redis broker. | No action required. |
+| **`400 Bad Request`** | Configuration YAML is missing, corrupt, or contains invalid syntax. | Verify YAML indentation and required fields (`model`, `train`, `sweeper`). |
+| **`404 Not Found`** | Specified `study_id` UUID does not exist. | Verify study UUID spelling in PostgreSQL database records. |
+| **`503 Service Unavailable`** | Control server core backend datastores are offline or unresponsive. | Inspect PostgreSQL (`:23436`) or Redis Broker (`:23438`) connection health. |
+
 ### 3. Visualizing Studies with Optuna Dashboard
 
 Optuna stores hyperparameter trials data inside the PostgreSQL database. Researchers can start the visual **Optuna Dashboard** to analyze optimization graphs, parameters importance, and trials history:
