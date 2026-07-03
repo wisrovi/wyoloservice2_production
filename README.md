@@ -755,10 +755,22 @@ def my_custom_agent_tool(arg1: str) -> dict:
 
 ---
 
-## 👨‍💻 Author
+## 👨‍💻 Author & Open Source Creator
 
 **William Steve Rodriguez Villamizar (wisrovi)**  
-*AI Leader & Solutions Architect*  
-*   [LinkedIn Profile](https://www.linkedin.com/in/wisrovi-rodriguez/)
+*Senior Systems & Software Architect | MLOps Specialist & AI Leader*
+
+William is a Senior Systems and Software Architect and AI Leader specializing in high-concurrency architectures, distributed machine learning compute systems, and robust MLOps orchestrations. He is the author of several popular open-source libraries and frameworks designed to solve complex backend development and datastore challenges:
+
+*   **[wpipe](https://github.com/wisrovi/wpipe)**: The training pipeline and life-cycle workflow engine powering the execution container steps in this clúster.
+*   **[wsqlite](https://github.com/wisrovi/wsqlite)**: High-performance wrapper and database client orchestration helper.
+*   **[wfabricsecurity](https://github.com/wisrovi/wfabricsecurity)**: Decoupled encryption and security verification tooling.
+*   **[wkafka](https://github.com/wisrovi/wkafka)**: Message-driven broker integrations.
+*   **[wpostgresql](https://github.com/wisrovi/wpostgresql)**: Enterprise PostgreSQL connection pool manager.
+
+### 🌐 Let's Connect:
+*   **Official Website:** [wisrovi.dev](https://wisrovi.dev)
+*   **GitHub Profile:** [github.com/wisrovi](https://github.com/wisrovi)
+*   **LinkedIn Professional:** [linkedin.com/in/wisrovi-rodriguez](https://www.linkedin.com/in/wisrovi-rodriguez/)
 
 > *"Decoupling complex AI research and transforming it into distributed, scalable industrial applications."*
