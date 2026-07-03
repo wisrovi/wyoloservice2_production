@@ -94,6 +94,16 @@ NeuralForgeAI (Train Service 2) represents a complete architectural paradigm shi
 | **Integrated Smoke Tests Suite** | `--` | **1-Click Smoke Test Runner:** GUI-triggered dry-runs or advanced E2E YOLO26 multi-task pipelines (Classify, Detect, Segment) for immediate validation. |
 | **Pre-flight Dataset Verification** | `--` | **Zero-Compute Dataset Check:** Specialized validation container executes advanced path and structure testing *prior* to task scheduling. |
 | **Dynamic Auto-Batching Adaptation** | `--` | **Dynamic Auto-Batching:** Utilizing `batch: -1` leverages YOLO’s internal hardware-capacity engine to auto-scale batches up to 90% VRAM safety. |
+| **Automated Installation Wrapper** | `--` | **1-Click Setup Script:** Executable installation package wraps all services, configurations, watchdogs, and mount structures in one command. |
+| **Container Shared Memory Tuning** | `--` | **Automatic SHM Allocation:** Automatically claims and configures shared memory boundaries (e.g. `--shm 24G`) preventing PyTorch dataloader crashes. |
+| **Optuna Dashboard Integration** | `--` | **Direct PG Database Visualizer:** Exposes study database tables to Optuna Dashboard in real-time, allowing advanced analytical parameter plotting. |
+| **Centralized Study Management** | `--` | **Celery Study Manager:** A dedicated background daemon orchestrating genetic study mutations and task routing, decoupling state from compute. |
+| **Real-time Host Telemetry** | `--` | **Dynamic Telemetry Daemon:** Ingests live hardware status (CPU, RAM, Disk Space) on active GPU workers and streams it to the UI. |
+| **Samba Credentials Hardening** | `--` | **Encapsulated Security:** Encrypted credential files (`chmod 600`) restricted exclusively to root ownership, hiding passwords from configurations. |
+| **Centralized S3 Artifact Mapping** | `--` | **MinIO S3 Integration:** Streams all weights (`best.pt`/`last.pt`), csv logs, and curves directly to a secure, persistent S3 storage container. |
+| **Isolated Docker Network Boundary** | `--` | **Control Network Isolation:** Control plane components isolated inside `control_network`, safeguarding databases from external intrusion. |
+| **YOLO Native Augmentation Sweeps** | `--` | **Data Augmentations Optimization:** Directly tunes spatial and color changes (`flipud`, `fliplr`, `mosaic`, `mixup`, `copy_paste`) via Optuna YAML settings. |
+
 
 ---
 
