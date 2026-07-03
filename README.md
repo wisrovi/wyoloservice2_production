@@ -218,6 +218,21 @@ curl -X POST "http://<MASTER_IP>:23442/train" \
 ```bash
 curl -X GET "http://<MASTER_IP>:23442/study/STUDY-UUID"
 ```
+*Response:*
+```json
+{
+  "study_id": "STUDY-UUID",
+  "status": "COMPLETED",
+  "fitness_metric": "metrics/mAP50",
+  "direction": "maximize",
+  "best_value": 0.7059,
+  "best_params": {
+    "lr0": 0.005,
+    "momentum": 0.9
+  },
+  "trials_count": 10
+}
+```
 
 #### Gracefully Cancel an Active Study:
 ```bash
