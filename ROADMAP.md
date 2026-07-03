@@ -148,7 +148,9 @@ To ensure complete architectural alignment, below is the roadmap and planned upg
 
 ## 📜 Changelog & Release History
 
-### Version 2.0.0 (Current Release) - 2026-07-03
+### Version 2.2.0 (Current Release) - 2026-07-03
+*   **Community Outreach & Partnership Roadmap:** Created the strategic plan and GANTT Phase 4 timeline for proposing NeuralForge AI as a distributed training partner to Ultralytics.
+*   **Ecosystem Documentation Update:** Aligned `wisrovi` suite description and the interactive Web RPG showcase quests in `wisrovi.github.io` to mirror the decoupled microservices of v2.0.0.
 *   **Decoupled Distributed Architecture:** Migrated from single-host execution script model (v1.0) to Celery dynamic message queue worker-invoker topologies.
 *   **Genetic Hyperparameter Tuning:** Optuna framework integration mapping trials, studies, and samplers (TPESampler/RandomSampler) to PostgreSQL database.
 *   **Model Context Protocol (MCP) Integration:** Exposed `wyoloservice-mcp` stdio FastMCP server to allow LLMs to validate datasets, generate configs, and monitor active training runs.
