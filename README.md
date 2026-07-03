@@ -103,6 +103,18 @@ NeuralForgeAI (Train Service 2) represents a complete architectural paradigm shi
 | **27** | **Centralized S3 Artifact Mapping** | `--` | **MinIO S3 Integration:** Streams all weights (`best.pt`/`last.pt`), csv logs, and curves directly to a secure, persistent S3 storage container. |
 | **28** | **Isolated Docker Network Boundary** | `--` | **Control Network Isolation:** Control plane components isolated inside `control_network`, safeguarding databases from external intrusion. |
 | **29** | **YOLO Native Augmentation Sweeps** | `--` | **Data Augmentations Optimization:** Directly tunes spatial and color changes (`flipud`, `fliplr`, `mosaic`, `mixup`, `copy_paste`) via Optuna YAML settings. |
+| **30** | **Unified Orchestration Commands** | `--` | **Makefile Interface:** Centralized Makefile to start/stop the API, celery queues, databases, and environments (`make start_all`, `make stop_all`). |
+| **31** | **Decoupled Architecture Profiles** | `--` | **Multi-Compose Setup:** Decoupled YAML configuration layers separating API Gateway, datastores, and celery task queues. |
+| **32** | **Centralized Environment Loaders** | `--` | **Unified .env Loader:** Direct ingestion of `control_host.env` variables across all docker services, preventing hardcoded connection credentials. |
+| **33** | **Multi-task Verification Baselines** | `--` | **Standardized Tasks Examples:** Built-in template configurations for Classification, Object Detection, and Instance Segmentation tasks. |
+| **34** | **Pre-flight Write Mount Validation** | `--` | **Samba Touch Verification:** Automatically tests write capability by writing a `.mount_test` file on Samba CIFS share before accepting study tasks. |
+| **35** | **Isolated Multi-GPU Cluster Routing** | `--` | **Dynamic GPU ID Binding:** Supports isolated routing to explicit GPUs via `extras.gpu.id` configuration, preventing parallel jobs collision. |
+| **36** | **Persistent Datastore Bind Mounts** | `--` | **Host Volume Mapping:** Binds container data (PostgreSQL, Redis, MinIO) directly to the host filesystem, preventing data loss on updates. |
+| **37** | **Optimized Production UI Builds** | `--` | **Vite Production Bundler:** Dedicated compilation stages using Node-alpine to build highly optimized React assets. |
+| **38** | **Study DB Parallel Analysis** | `--` | **PostgreSQL Port Exposure:** Allows external Optuna analysis tools to query study progress without locking main databases. |
+| **39** | **Programmatic S3 Data Exporter** | `--` | **Boto3 API Integration:** Scripted S3 clients allow programmatic downloads of weight checkpoints directly from MinIO using python codes. |
+| **40** | **Dynamic Sweep Metrics Direction** | `--` | **Bi-Directional Optimization:** Supports defining `direction: minimize` or `direction: maximize` inside YAML config sweeps. |
+| **41** | **Categorized Artifact File Hierarchy** | `--` | **MLflow Experiment Prefix Trees:** Organizes artifacts in MinIO under structured directories mapping `<experiment_id>/<run_uuid>`. |
 
 
 ---
