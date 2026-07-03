@@ -10,6 +10,28 @@ The core objective of this system is to decouple the user interface layer from t
 
 ---
 
+## 📌 Table of Contents
+*   [🛠️ Tech Stack](#️-tech-stack)
+*   [🔗 Sibling Repositories Portfolio](#-sibling-repositories-portfolio)
+*   [🗺️ System Architecture](#️-system-architecture)
+*   [📦 MinIO S3 Bucket & Artifacts Structure](#-minio-s3-bucket--artifacts-structure)
+*   [⛓️ Celery Priority Queues & Task Routing](#️-celery-priority-queues--task-routing)
+*   [🚀 Installation & Deployment Guide](#-installation--deployment-guide)
+*   [📖 User Guide & Operations](#-user-guide--operations)
+*   [⚙️ Config Template (base_config.yaml)](#️-config-template-base_configyaml)
+*   [🎛️ Advanced Optuna Sweeper Tuning Guide](#️-advanced-optuna-sweeper-tuning-guide)
+*   [🤖 Model Context Protocol (MCP) Integration](#-model-context-protocol-mcp-integration-wyoloservice-mcp)
+*   [📂 Repository Directory Tree](#-repository-directory-tree)
+*   [🔌 Services & Ports Quick Reference](#-services--ports-quick-reference)
+*   [📊 Logs & Telemetry Commands](#-logs--telemetry-commands)
+*   [🔍 Troubleshooting & Maintenance](#-troubleshooting--maintenance)
+*   [🔒 Security & Samba Network Hardening](#-security--samba-network-hardening)
+*   [📊 Hardware Benchmarks & Performance Profiles](#-hardware-benchmarks--performance-profiles)
+*   [👥 Developer & Contribution Guidelines](#-developer--contribution-guidelines)
+*   [👨‍💻 Author & Open Source Creator](#-author--open-source-creator)
+
+---
+
 ## 🛠️ Tech Stack
 
 The project is built upon a robust, high-performance infrastructure:
