@@ -90,11 +90,16 @@ gantt
 
 ### 1. Ultralytics Ecosystem Integration & Marketing Pitch
 * **Status:** `PLANNED`
-* **Objective:** Leverage Ultralytics' massive audience (YOLO ecosystem) to boost downloads, usage, and developer reputation by featuring NeuralForge AI on their official channels.
-* **Description:**
+* **Objective:** Leverage Ultralytics' massive audience (YOLO ecosystem) to showcase NeuralForgeAI as the premier open-source distributed hyperparameter tuning framework for YOLO, aiming for official integration/inclusion on their "Integrations" page.
+* **The "Hook" for Ultralytics:**
+  * **YOLO Native Callback Provider (`ultralytics.callbacks`):** Develop a zero-dependency Python package (`neuralforge-yolo-callback`) that registers as an official training callback. This allows developers using standard `model.train()` or `yolo train` command lines to push telemetry, validation loss data, and system usage metrics directly to a NeuralForgeAI control gateway with a single config flag.
+  * **Grad-CAM Explainable AI integration for YOLO:** Provide Ultralytics users with an automated, out-of-the-box post-training activation map visualizer. Currently, explaining YOLO decisions requires custom research code. Featuring NeuralForgeAI's Grad-CAM layer provides a plug-and-play solution to debug YOLO dataset biases (e.g., detecting if a model is focusing on background contexts rather than foreground objects).
+  * **Optuna-Distributed Tuning Guide Pull Request:** Contribute a structured markdown guide to the official Ultralytics repository (`ultralytics/docs/integrations/`) demonstrating how to run genetic-algorithm sweeps at scale across multi-GPU / multi-node clusters.
+  * **Ultralytics HUB API Compatibility:** Align API endpoints with Ultralytics HUB payload definitions, allowing users to visualize genetic trials progress directly inside the Ultralytics HUB UI or push optimal models straight to their hub account.
+* **Execution Plan:**
   * **Repository Polish:** Ensure all sub-repositories, docker-compose configuration hubs, and API interfaces are thoroughly documented in English with setup instructions and architecture charts.
   * **Interactive Demo:** Create a short high-fidelity video showcasing multi-node study scaling, priority queues in action, and live telemetry tracking on MLflow/Optuna.
-  * **Value Pitch:** Approach Glenn Jocher (CEO) or DevRel leads with a clear value proposition: NeuralForge AI offers a free, open-source, decoupled Optuna-based distributed hyperparameter optimization cluster specifically for YOLO models.
+  * **Value Pitch:** Approach Glenn Jocher (CEO) or DevRel leads with a clear value proposition: NeuralForgeAI offers a free, open-source, decoupled Optuna-based distributed hyperparameter optimization cluster specifically designed for YOLO models.
   * **Guest Tutorial:** Contribute a detailed "How to scale YOLO training across GPU nodes" tutorial to the official Ultralytics documentation or blog.
 
 ---
