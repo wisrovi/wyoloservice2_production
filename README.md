@@ -359,6 +359,33 @@ Set the fitness key to optimize specific performance values. The worker translat
   * `metrics/mAP50-95`: Mask Mean Average Precision across IoU thresholds 0.5 to 0.95.
   * `val/seg_loss`: Mask segmentation loss (use `direction: minimize`).
 
+### 5. Recommended Tuning Hyperparameters (YOLO Settings)
+
+When building your search space, you can customize and optimize these core training and data augmentation parameters directly from the official Ultralytics YOLO specifications:
+
+#### Training Optimization Parameters
+*   **`lr0`** (Float, default `0.01`): Initial learning rate (e.g. tune between `[ "loguniform", 1e-5, 1e-1 ]`).
+*   **`lrf`** (Float, default `0.01`): Final learning rate multiplier = `lr0 * lrf`.
+*   **`momentum`** (Float, default `0.937`): Optimizer momentum factor.
+*   **`weight_decay`** (Float, default `0.0005`): L2 regularization weight decay.
+*   **`optimizer`** (Categorical, default `'auto'`): Choice of optimizer algorithms (choices: `SGD`, `Adam`, `AdamW`, `RMSProp`).
+*   **`dropout`** (Float, default `0.0`): Dropout rate for classification layers to prevent overfitting.
+
+#### Image Augmentation Parameters (Spatial & Color)
+*   **`hsv_h`** (Float, default `0.015`): HSV Hue color adjustment fraction (range: `0.0` - `1.0`).
+*   **`hsv_s`** (Float, default `0.7`): HSV Saturation color adjustment fraction.
+*   **`hsv_v`** (Float, default `0.4`): HSV Value (brightness) adjustment fraction.
+*   **`degrees`** (Float, default `0.0`): Rotation angle degrees range (range: `0.0` - `180.0`).
+*   **`translate`** (Float, default `0.1`): Spatial translation fraction.
+*   **`scale`** (Float, default `0.5`): Image scale gain ratio.
+*   **`shear`** (Float, default `0.0`): Shear distortion angle degrees.
+*   **`perspective`** (Float, default `0.0`): Perspective distortion fraction (range: `0.0` - `0.001`).
+*   **`flipud`** (Float, default `0.0`): Vertical flip probability (range: `0.0` - `1.0`).
+*   **`fliplr`** (Float, default `0.5`): Horizontal flip probability (range: `0.0` - `1.0`).
+*   **`mosaic`** (Float, default `1.0`): 4-image mosaic composition probability.
+*   **`mixup`** (Float, default `0.0`): Mixup image composition overlay probability.
+*   **`copy_paste`** (Float, default `0.0`): Segment instance copy-paste probability (only for instance segmentation).
+
 ---
 
 ## 🤖 Model Context Protocol (MCP) Integration (`wyoloservice-mcp`)
