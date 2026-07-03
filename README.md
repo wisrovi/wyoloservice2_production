@@ -303,6 +303,90 @@ The MCP tools contain built-in system instructions embedded in their docstrings 
 * **Automatic credential recovery:** Once configured, the agent retrieves keys from the configuration store without prompting the user.
 * **Intelligent study tracing:** When asked "how is my training going?", the agent will inspect the current directory, locate generated `.yaml` files, extract the `study_id`, and pull metrics from the cluster automatically.
 
+## 📂 Repository Directory Tree
+
+The directory layout of `wyoloservice2_production` is structured as follows:
+
+```
+wyoloservice2_production/
+├── control_server/              # Master Node Infrastructure
+│   ├── docker-compose.api.yml   # Gateway API (FastAPI) compose file
+│   ├── docker-compose.env.yml   # Core Datastore (Postgres, Redis, MinIO, MLflow)
+│   ├── docker-compose.manager.yml # Optuna Sweeper Manager Celery worker
+│   ├── control_host.env         # Master variables environment template
+│   └── Makefile                 # Master stack startup automation commands
+├── workers/                     # GPU Compute Node Scripts
+│   ├── download.sh              # 1-click Worker package downloader
+│   ├── install.sh               # Watchdog systemd & Watchtower setup script
+│   └── micro_train.sh           # Ephemeral docker image validation check
+└── docs/                        # Sphinx documentation builds
+```
+
+---
+
+## 🔌 Services & Ports Quick Reference
+
+Below is a quick reference mapping of the cluster ports exposed on the Master Node (`<MASTER_IP>`):
+
+| Service | Port | Protocol / API | Access Method |
+| :--- | :---: | :--- | :--- |
+| **WDarwin Ops (UI)** | `23432` | HTTP / React SPA | `http://<MASTER_IP>:23432` |
+| **FastAPI Gateway (API)** | `23442` | HTTP / REST API | `http://<MASTER_IP>:23442/health` |
+| **MLflow Server** | `23435` | HTTP / Experiments | `http://<MASTER_IP>:23435` |
+| **PostgreSQL Database** | `23436` | TCP / Optuna Backend | `postgresql://postgres:postgres@<MASTER_IP>:23436/wyoloservice` |
+| **Redis Broker** | `23438` | TCP / Celery Queues | `redis://<MASTER_IP>:23438/0` |
+| **MinIO Console** | `23448` | HTTP / Storage UI | `http://<MASTER_IP>:23448` |
+| **MinIO S3 Endpoint** | `23449` | HTTP / S3 API | `http://<MASTER_IP>:23449` |
+
+---
+
+## 📊 Logs & Telemetry Commands
+
+To inspect the system's live behavior, execute the following commands on the Master Node:
+
+### 1. Inspect Master Services Logs (VDarwin Ops & API Gateway)
+```bash
+cd wyoloservice2_production/control_server
+
+# View live FastAPI backend logs
+docker compose -f docker-compose.api.yml --env-file control_host.env logs -f api
+
+# View live React Frontend logs
+docker compose -f docker-compose.api.yml --env-file control_host.env logs -f ui
+```
+
+### 2. Inspect Optuna Celery Manager Logs
+```bash
+docker compose -f docker-compose.manager.yml --env-file control_host.env logs -f manager
+```
+
+### 3. Check GPU Workers Logs (On Worker Nodes)
+```bash
+# View watchdog systemd logs
+journalctl -u wyolo_worker.service -f -n 100
+```
+
+---
+
+## 🔍 Troubleshooting & Maintenance
+
+### 1. Postgres DB Connection Failures
+* **Symptom:** API logs show `psycopg2.OperationalError: connection to server at "<MASTER_IP>", port 23436 failed: Connection refused`.
+* **Fix:** Ensure PostgreSQL is running by calling `docker ps`. Verify that the database connection port `23436` is mapped on the host. If necessary, restart the master environment: `make stop_env && make start_env`.
+
+### 2. Samba CIFS Write Permissions Check
+* **Symptom:** Worker initialization fails with `CIFS mount touch test: Failed. Write permissions denied.`.
+* **Fix:** The worker tests permissions by writing a temporary `.mount_test` file. Make sure the credentials in `/etc/cifs-credentials` are correct and that the Samba share owner has active write permissions (`chmod -R 775`).
+
+### 3. Celery Task Jam / Redis Timeout
+* **Symptom:** Submitted studies are stuck in `PENDING` state and Celery workers do not consume jobs.
+* **Fix:** Restart Redis and clear stuck Celery queues:
+  ```bash
+  # Prune Redis keys & restart Celery queue
+  redis-cli -p 23438 FLUSHALL
+  docker restart control_server-fastapi-1 control_server-manager-1
+  ```
+
 ---
 
 ## 👨‍💻 Author
