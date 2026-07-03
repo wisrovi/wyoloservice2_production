@@ -4,6 +4,16 @@
 ![Status](https://img.shields.io/badge/status-production-success.svg)
 ![Docker](https://img.shields.io/badge/docker-ready-2496ED.svg?logo=docker)
 
+| Metadata | Details |
+| :--- | :--- |
+| **Document Version** | `2.0.0` (Active Release) |
+| **Last Reviewed** | `2026-07-03` |
+| **Target Audience** | Machine Learning Engineers, MLOps Architects, DevOps Admins |
+| **Cluster Scope** | Distributed GPU Training, Genetic Sweeps & Optuna Orchestration |
+| **Primary Maintainer** | William Steve Rodriguez Villamizar (wisrovi) |
+
+---
+
 **NeuralForgeAI** (and its control panel **WDarwin Ops**) is an enterprise-grade platform designed for **distributed orchestration, scalable training, and evolutionary hyperparameter optimization (Genetic Algorithms)** targeting advanced computer vision architectures, specifically **YOLOv8**, **YOLOv11**, and **YOLO26**.
 
 The core objective of this system is to decouple the user interface layer from the heavy-compute layer. It enables researchers and developers to submit simple YAML configurations to a centralized cluster. The cluster autonomously handles load balancing, priority assignment, model evolution (mutations through genetic algorithms), and structured metric logging.
