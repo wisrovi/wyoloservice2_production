@@ -71,3 +71,50 @@ gantt
 * **Status:** `BACKLOG`
 * **Objective:** Dynamically allocate and destroy GPU worker nodes based on queue load.
 * **Description:** Write Terraform scripts to provision auto-scaling spot GPU instances on AWS or GCP when Celery high-priority queues are heavily loaded, reducing idle cloud costs.
+
+---
+
+## 🧩 Sibling Repositories Roadmap & Upgrades
+
+To ensure complete architectural alignment, below is the roadmap and planned upgrades mapped for each sibling repository:
+
+### 1. `wyoloservice2_production` (Production Hub)
+*   **Upgrades:**
+    *   Docker Compose multi-stage configurations for Development, Staging, and Production.
+    *   Helm Charts and K8s configuration templates.
+    *   Terraform scripts for dynamic GPU compute fleet auto-scaling.
+
+### 2. `wyoloservice2_control_server` (Control Server)
+*   **Upgrades:**
+    *   PostgreSQL Master-Slave active replication setup.
+    *   Redis Sentinel cluster configuration for HA Celery broker failover.
+    *   MinIO S3 bucket data retention and automated pruning lifecycle rules (removing old trials weights).
+
+### 3. `NeuralForgeAI` (FastAPI API & React UI)
+*   **Upgrades:**
+    *   SSE (Server-Sent Events) or Websockets endpoint to stream stdout training logs.
+    *   Interactive terminal logs UI component in the training details panel.
+    *   ETA progress bar logic and side-by-side YAML configuration comparator.
+
+### 4. `wyoloservice2_manager` (Study Manager)
+*   **Upgrades:**
+    *   Graceful cancel monitoring loop checking Redis flags.
+    *   Integration of dynamic pruners and mapping intermediate trial metrics to database.
+    *   Optimization results notification dispatcher (Email / Slack alerts on study completion).
+
+### 5. `wyoloservice2_invoker` (Worker Invoker)
+*   **Upgrades:**
+    *   Detailed host telemetry (e.g. network utilization, S3 upload speeds, filesystem disk I/O).
+    *   Sub-process GPU container management to deploy tasks on specific CUDA devices dynamically.
+    *   Automatic image pruning of old `worker_executor` versions on the host.
+
+### 6. `wyoloservice2_worker` (YOLO Training Worker)
+*   **Upgrades:**
+    *   Support for YOLOv12 and newer Vision Transformer architectures.
+    *   Local DVC SSD caching to skip downloading duplicate datasets over Samba for consecutive trials.
+    *   Automated S3 checkpointing to resume training trials interrupted by host hardware failures.
+
+### 7. `wyoloservice2_mcp` (Model Context Protocol)
+*   **Upgrades:**
+    *   Additional tools for system administration: `restart_service(service_name)`, `get_gpu_temp()`, and `view_failed_trial_traceback(trial_id)`.
+    *   Enhanced natural language prompt instructions for autonomous agent pair-programming.
