@@ -469,6 +469,22 @@ docker compose -f docker-compose.manager.yml --env-file control_host.env logs -f
 journalctl -u wyolo_worker.service -f -n 100
 ```
 
+### 4. GPU Worker Daemon Maintenance Commands (On Worker Nodes)
+Manage the watchdog and auto-update processes:
+
+* **Restart Worker Daemon:**
+  ```bash
+  sudo systemctl restart wyolo_worker.service
+  ```
+* **Verify Systemd Watchdog Status:**
+  ```bash
+  sudo systemctl status wyolo_worker.service
+  ```
+* **Force Watchtower Update Check (Immediate Docker Pull):**
+  ```bash
+  docker run --rm -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --run-once
+  ```
+
 ---
 
 ## 🔍 Troubleshooting & Maintenance
