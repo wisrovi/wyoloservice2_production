@@ -8,6 +8,7 @@ This document outlines the strategic roadmap for the NeuralForgeAI training clus
 *   [🗺️ GANNT Roadmap Timeline](#️-gannt-roadmap-timeline)
 *   [🚀 Application & MLOps Feature Roadmap](#-application--mlops-feature-roadmap)
 *   [☁️ Infrastructure & High-Availability Roadmap](#️-infrastructure--high-availability-roadmap)
+*   [🤝 Partnership & Community Outreach Roadmap](#-partnership--community-outreach-roadmap)
 *   [🧩 Sibling Repositories Roadmap & Upgrades](#-sibling-repositories-roadmap--upgrades)
 *   [📜 Changelog & Release History](#-changelog--release-history)
 
@@ -29,6 +30,8 @@ gantt
     section Phase 3: Infrastructure
     Postgres & Redis Replication (HA)      :2026-08-15, 15d
     Kubernetes Orchestration & Helm        :2026-09-01, 20d
+    section Phase 4: Outreach
+    Ultralytics Pitch & Guest Tutorial     :2026-09-15, 15d
 ```
 
 ---
@@ -80,6 +83,19 @@ gantt
 * **Status:** `BACKLOG`
 * **Objective:** Dynamically allocate and destroy GPU worker nodes based on queue load.
 * **Description:** Write Terraform scripts to provision auto-scaling spot GPU instances on AWS or GCP when Celery high-priority queues are heavily loaded, reducing idle cloud costs.
+
+---
+
+## 🤝 Partnership & Community Outreach Roadmap
+
+### 1. Ultralytics Ecosystem Integration & Marketing Pitch
+* **Status:** `PLANNED`
+* **Objective:** Leverage Ultralytics' massive audience (YOLO ecosystem) to boost downloads, usage, and developer reputation by featuring NeuralForge AI on their official channels.
+* **Description:**
+  * **Repository Polish:** Ensure all sub-repositories, docker-compose configuration hubs, and API interfaces are thoroughly documented in English with setup instructions and architecture charts.
+  * **Interactive Demo:** Create a short high-fidelity video showcasing multi-node study scaling, priority queues in action, and live telemetry tracking on MLflow/Optuna.
+  * **Value Pitch:** Approach Glenn Jocher (CEO) or DevRel leads with a clear value proposition: NeuralForge AI offers a free, open-source, decoupled Optuna-based distributed hyperparameter optimization cluster specifically for YOLO models.
+  * **Guest Tutorial:** Contribute a detailed "How to scale YOLO training across GPU nodes" tutorial to the official Ultralytics documentation or blog.
 
 ---
 
