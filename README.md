@@ -197,6 +197,7 @@ chmod +x micro_train.sh
     *   **Cluster Telemetry:** Live monitoring of CPU/GPU load, RAM usage, and disk space on active nodes.
     *   **Training Launcher:** Drag-and-drop YAML config uploader.
     *   **Study History:** Search, filter, and drill down into active/completed trials.
+    *   **File Browser:** Remote explorer to navigate, inspect, and download generated trial model weights and metrics files directly from Samba CIFS storage mounts.
 *   **Integrated Smoke Tests (Admin Only):**
     *   **Basic Smoke Test (⚡ Activity Icon):** Launches a dry-run study (`dry_run: true`) with 5 trials to verify complete Celery, Redis, API, and Invoker connectivity.
     *   **Advanced E2E Smoke Test (🔥 Flame Icon):** Launches three concurrent real GPU training runs (Classification, Detection, and Segmentation) using `yolo26` configurations to validate S3 artifact writes and MLflow tracking.
