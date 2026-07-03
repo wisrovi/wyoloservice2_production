@@ -70,7 +70,7 @@ The project is built upon a robust, high-performance infrastructure:
 
 ## ⚖️ Train Service 1 vs. Train Service 2 Comparison
 
-NeuralForgeAI (Train Service 2) represents a complete architectural paradigm shift. The table below highlights how the system evolved from a fragile, single-node script into an enterprise-ready, resilient, and distributed MLOps powerhouse.
+NeuralForgeAI (Train Service 2) represents a complete architectural paradigm shift. The table below highlights how the system evolved from the legacy [Train Service 1](file:///home/william.rodriguez/Documents/w_libraries/train_service_1/wyoloservice) (a fragile, single-node script) into an enterprise-ready, resilient, and distributed MLOps powerhouse.
 
 | Feature / Dimension | Train Service 1 (Legacy / "Child in Diapers") | Train Service 2 (Modern / "The Pro Champion") |
 | :--- | :--- | :--- |
