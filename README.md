@@ -507,6 +507,37 @@ To assist researchers in resource planning, below is a performance baseline refe
 
 ---
 
+## 👥 Developer & Contribution Guidelines
+
+We welcome contributions to extend the NeuralForgeAI clúster capabilities. To contribute new features, follow this workflow:
+
+### 1. Development Commit Rules
+To maintain clean and granular pull requests, all repository changes must follow the **Single-File Commit Rule**:
+* Every modified or added file must be committed and pushed in a **separate, independent commit** (one unique commit per file).
+
+### 2. Pushing New Worker Container Images
+If you update the worker training scripts (`wtrain` under `wyoloservice2_worker`), rebuild and push the image to Docker Hub so that worker nodes auto-pull the updates:
+```bash
+# Tag and push the final worker image
+docker build -t wisrovi/train_service:worker_executor_v1.0.0 -f Dockerfile .
+docker push wisrovi/train_service:worker_executor_v1.0.0
+```
+*Note: GPU compute nodes running Watchtower will automatically detect the new image digest and hot-reload active workers within 10 minutes.*
+
+### 3. Exposing New FastMCP Tools
+To add new functionalities for AI Agents, edit the MCP server source code under `wyoloservice2_mcp/src/wyolo_mcp/server.py`. Define your tool using the `@mcp.tool()` decorator:
+```python
+@mcp.tool()
+def my_custom_agent_tool(arg1: str) -> dict:
+    """
+    Detailed docstring describing what the tool does. Enforce strict prompts
+    instructing the LLM when and how to call this tool.
+    """
+    return {"status": "success", "data": arg1}
+```
+
+---
+
 ## 👨‍💻 Author
 
 **William Steve Rodriguez Villamizar (wisrovi)**  
