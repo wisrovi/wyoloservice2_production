@@ -433,6 +433,48 @@ journalctl -u wyolo_worker.service -f -n 100
 
 ---
 
+## 🔒 Security & Samba Network Hardening
+
+To protect credentials, dataset integrity, and container boundaries inside the cluster, enforce the following security best practices.
+
+### 1. Samba CIFS Credentials Hardening
+Never hardcode plain text passwords in fstab or mount scripts. Instead, use a credentials file restricted to root:
+
+```bash
+# Create the secure credentials file
+sudo nano /etc/cifs-credentials
+
+# Add the following properties:
+username=wisrovi
+password=wyoloservice
+
+# Restrict permissions so only root can read or write
+sudo chmod 600 /etc/cifs-credentials
+sudo chown root:root /etc/cifs-credentials
+```
+
+### 2. Docker Container Security Constraints
+When workers spin up training docker instances (`worker_executor`), limit container privileges to prevent escaping:
+* **Privileged Flag Mitigation:** Avoid running worker containers with `--privileged` unless required for specific CIFS kernel mounts. Instead, mount files on the host and share directories via read-only volumes (`:ro`):
+  ```bash
+  # Example read-only dataset mount
+  docker run -v /wyolo/control_server/datasets:/datasets:ro ...
+  ```
+* **User Isolation:** Run the training python processes inside the container under a non-root group and user (UID 1000) whenever possible to prevent host directory ownership hijacking.
+
+### 3. PostgreSQL Database Access Control
+Do not expose database port `23436` to the public internet. Restrict access using the host firewall (`iptables` or `ufw`) to only accept connections from your trusted cluster master and celery worker IPs:
+```bash
+# Allow Master Node local loopback and API Gateway
+sudo ufw allow from 127.0.0.1 to any port 23436 proto tcp
+
+# Allow worker nodes to sync Optuna studies
+sudo ufw allow from 192.168.10.0/24 to any port 23436 proto tcp
+sudo ufw deny 23436/tcp
+```
+
+---
+
 ## 👨‍💻 Author
 
 **William Steve Rodriguez Villamizar (wisrovi)**  
