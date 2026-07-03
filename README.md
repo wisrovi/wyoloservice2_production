@@ -472,6 +472,21 @@ journalctl -u wyolo_worker.service -f -n 100
   docker restart control_server-fastapi-1 control_server-manager-1
   ```
 
+### 4. Database Backup & Study Migrations
+To migrate Optuna study databases between servers or back up metadata before system upgrades, run the following commands on the Master Node:
+
+* **Export Study Database (Backup):**
+  ```bash
+  # Dump PostgreSQL data to local SQL file
+  docker exec -t control_server-postgres-1 pg_dump -U postgres wyoloservice > wyoloservice_backup.sql
+  ```
+
+* **Import Study Database (Restore):**
+  ```bash
+  # Restore SQL backup file to active PostgreSQL container
+  cat wyoloservice_backup.sql | docker exec -i control_server-postgres-1 psql -U postgres -d wyoloservice
+  ```
+
 ---
 
 ## 🔒 Security & Samba Network Hardening
