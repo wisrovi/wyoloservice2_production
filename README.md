@@ -112,6 +112,24 @@ mlflow-artifacts/
 
 ---
 
+## ⛓️ Celery Priority Queues & Task Routing
+
+The clúster balances manager studies and GPU task executions dynamically across multiple queues in Redis. When submitting a study via the API/UI, Celery routes tasks based on priority flags:
+
+### 1. Management Queue (`managers`)
+All initial configuration parsing and Optuna genetic loops run in the `managers` queue. The **Celery Study Manager** consumes this queue to schedule trial runs.
+
+### 2. GPU Task Queues (`gpus_high`, `gpus_medium`, `gpus_low`)
+When the Celery Manager generates a trial mutation, it routes the execution payload to the workers based on the study priority:
+* **`priority: high`:** Routed to the `gpus_high` queue. Consumed first by available worker-invokers.
+* **`priority: medium`:** Routed to the `gpus_medium` queue. Consumed when the high-priority queue is empty.
+* **`priority: low`:** Routed to the `gpus_low` queue. Ideal for background or overnight sweeps (e.g. Smoke Tests run on `low`).
+
+### 3. Worker Concurrency Settings
+Worker-invoker nodes pull tasks using a concurrency cap to prevent out-of-memory errors on shared GPUs. Each worker daemon is configured by default with `--concurrency=1` to ensure strict single-GPU allocation per trial, though this can be scaled up on multi-GPU machines.
+
+---
+
 ## 🚀 Installation & Deployment Guide
 
 ### Prerequisites
