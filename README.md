@@ -316,6 +316,25 @@ Define bounds inside `sweeper.search_space.train` or `sweeper.search_space.model
     epochs: ["int", 50, 200]
   ```
 
+### 4. Objective Fitness Metrics (`sweeper.fitness`)
+Set the fitness key to optimize specific performance values. The worker translates generic keys to task-specific ones:
+
+* **Image Classification:**
+  * `metrics/accuracy_top1` (Default): Top-1 accuracy rate.
+  * `metrics/accuracy_top5`: Top-5 accuracy rate.
+  * `val/loss`: Overall validation loss (use `direction: minimize`).
+
+* **Object Detection:**
+  * `metrics/mAP50` (Default): Mean Average Precision at IoU=0.5.
+  * `metrics/mAP50-95`: Mean Average Precision across IoU thresholds 0.5 to 0.95.
+  * `val/box_loss`: Bounding box regression loss (use `direction: minimize`).
+  * `val/cls_loss`: Classification loss (use `direction: minimize`).
+
+* **Instance Segmentation:**
+  * `metrics/mAP50` (Default): Mask Mean Average Precision at IoU=0.5.
+  * `metrics/mAP50-95`: Mask Mean Average Precision across IoU thresholds 0.5 to 0.95.
+  * `val/seg_loss`: Mask segmentation loss (use `direction: minimize`).
+
 ---
 
 ## 🤖 Model Context Protocol (MCP) Integration (`wyoloservice-mcp`)
