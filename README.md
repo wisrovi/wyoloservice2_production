@@ -35,17 +35,19 @@ The project is built upon a robust, high-performance infrastructure:
 
 ---
 
-## 🧩 Project Components (Microservices)
+## 🧩 Project Components (Ecosystem Repositories)
 
-The ecosystem is divided into 5 specialized repositories that interact asynchronously:
+The NeuralForgeAI ecosystem is composed of 7 sibling repositories, orchestrating different layers of the distributed workflow:
 
-| Microservice | Local Directory | Description & Purpose |
-| :--- | :--- | :--- |
-| **Production Hub** | `wyoloservice2_production` | **(This repository)** The main entry point. Contains the Master node Docker Compose stacks, cluster topology, and worker GPU node setup files. |
-| **Control Server (Master Host)** | `wyoloservice2_control_server` | Deploys the shared data foundation: Redis (queues), PostgreSQL (Optuna DB), MinIO (weights and datasets), and MLflow (quantitative metrics). |
-| **API Gateway & UI** | `NeuralForgeAI` | Houses both the FastAPI server (`/api` on port `23442`) and the WDarwin Ops React panel (`/UI` on port `23432`) syncing the live cluster state. |
-| **Study Manager** | `wyoloservice2_manager` | Celery consumer. Listens to the `managers` queue, parses YAML search spaces, creates Optuna studies/trials, computes fitness, and orchestrates genetic mutations. |
-| **Worker Invoker (GPU Nodes)** | `wyoloservice2_invoker` | Heavy-execution GPU worker. Downloads datasets, mounts Samba shares, spawns ephemeral YOLO training docker containers, validates metrics, and uploads results. |
+| Repository / Component | Local Directory | GitHub Link | Description & Purpose |
+| :--- | :--- | :--- | :--- |
+| **Production Hub** | `wyoloservice2_production` | [wisrovi/wyoloservice2_production](https://github.com/wisrovi/wyoloservice2_production) | **(This repository)** Master deployment files, unified Makefiles, Samba credentials, and node setup scripts. |
+| **Control Server** | `wyoloservice2_control_server` | [wisrovi/wyoloservice2_control_server](https://github.com/wisrovi/wyoloservice2_control_server) | Master data foundation stack, housing Redis, PostgreSQL (Optuna DB), MinIO (S3 storage), and MLflow. |
+| **API Gateway & UI** | `NeuralForgeAI` | [wisrovi/NeuralForgeAI](https://github.com/wisrovi/NeuralForgeAI) | Houses the REST API Gateway (FastAPI on port `23442`) and the WDarwin Ops Single Page App dashboard (React on port `23432`). |
+| **Study Manager** | `wyoloservice2_manager` | [wisrovi/wyoloservice2_manager](https://github.com/wisrovi/wyoloservice2_manager) | Celery study manager executing the Optuna genetic hyperparameter optimization trials loop. |
+| **Worker Invoker** | `wyoloservice2_invoker` | [wisrovi/wyoloservice2_invoker](https://github.com/wisrovi/wyoloservice2_invoker) | GPU-node background daemon consuming Redis tasks queue and launching executor containers. |
+| **YOLO Training Worker** | `wyoloservice2_worker` | [wisrovi/wyoloservice2_worker](https://github.com/wisrovi/wyoloservice2_worker) | Ephemeral YOLO container codebase (`wtrain`) performing real dataset validation and model training on GPUs. |
+| **Model Context Protocol** | `wyoloservice2_mcp` | [wisrovi/wyoloservice2_mcp](https://github.com/wisrovi/wyoloservice2_mcp) | FastMCP server exposing tools to LLMs (Claude, Antigravity) for automated, natural-language cluster control. |
 
 ---
 
