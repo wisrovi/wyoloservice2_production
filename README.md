@@ -186,56 +186,92 @@ metadata:
 
 ---
 
-## 🤖 Model Context Protocol (MCP) Integration
+## 🤖 Model Context Protocol (MCP) Integration (`wyoloservice-mcp`)
 
-The **Model Context Protocol (MCP)** enables intelligent LLM agents (such as Claude Desktop, Antigravity, or Cursor) to act as autonomous operators on the NeuralForgeAI cluster.
+The ecosystem provides a native Model Context Protocol (MCP) server named `wyoloservice-mcp` (repository: `wyoloservice2_mcp`). This server enables LLM agents (like Claude Desktop, Antigravity, or Cursor) to act as autonomous operators on your cluster—validating remote paths, compiling configs, launching studies, and tracking metrics.
 
-### MCP Integration Diagram
+### MCP Integration Architecture
 
 ```
-┌──────────────┐             ┌────────────┐             ┌────────────────┐
-│  LLM Agent   │ ──────────> │ MCP Client │ ──────────> │   MCP Server   │
-│  (AI Coder)  │             │  (Claude)  │             │ (Postgres/API) │
-└──────────────┘             └────────────┘             └────────────────┘
-                                                                │
-                                                                ▼
-                                                        ┌────────────────┐
-                                                        │ NeuralForgeAI  │
-                                                        │   Cluster      │
-                                                        └────────────────┘
+┌────────────────┐           ┌──────────────┐           ┌───────────────────┐
+│   LLM Agent    │ ────────> │  MCP Client  │ ────────> │  wyoloservice-mcp  │
+│ (AI Assistant) │           │ (Claude/agy) │           │ (FastMCP Server)  │
+└────────────────┘           └──────────────┘           └───────────────────┘
+                                                                  │
+                                      ┌───────────────────────────┴───────────────────────────┐
+                                      ▼                                                       ▼
+                            ┌───────────────────┐                                   ┌───────────────────┐
+                            │ REST API Gateway  │                                   │ Docker Exec (GPU) │
+                            │ (POST /train etc) │                                   │ (Mounts CIFS E2E) │
+                            └───────────────────┘                                   └───────────────────┘
 ```
 
-### Configuring MCP Servers in Your Client
+### Installation
 
-To allow your AI assistant to query studies directly from PostgreSQL, submit training jobs, or inspect system files, add the following servers to your client configuration file (e.g., `~/.config/Claude/claude_desktop_config.json`):
+The MCP package is published on PyPI and can be installed globally:
 
+```bash
+# Install from PyPI
+pip install wyoloservice-mcp
+
+# Or install from local source
+cd /home/wisrovi/Documents/train_service_2/wyoloservice2_mcp
+pip install -e .
+```
+This registers the command `wyolo-mcp` in the shell environment.
+
+### Registering the MCP Server in LLM Clients
+
+To connect the server, configure the `wyolo-mcp` command in your client settings.
+
+#### For Antigravity (Gemini CLI)
+Add the server under `~/.gemini/config/mcp.json`:
 ```json
 {
   "mcpServers": {
-    "neuralforge-database": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-postgres",
-        "postgresql://postgres:postgres@<MASTER_IP>:23436/wyoloservice"
-      ]
-    },
-    "neuralforge-filesystem": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "/home/wisrovi/Documents/train_service_2/wyoloservice2_production"
-      ]
+    "neuralforge-mcp": {
+      "command": "wyolo-mcp"
     }
   }
 }
 ```
 
-### AI Agent Capabilities via MCP:
-1. **Direct Database Queries (`neuralforge-database`):** The LLM can write SQL queries to list studies, inspect the best trial parameters, track trials loss metrics, or analyze execution failures directly.
-2. **File System Operations (`neuralforge-filesystem`):** Allows the AI agent to edit/create YAML files, read error logs, or inspect configurations on the master host.
-3. **Gateway REST Calls:** If equipped with HTTP clients, the agent can issue `POST /train` requests, monitor status, and programmatically cancel training studies based on real-time metric analysis.
+#### For Claude Desktop
+Add the server under `~/.config/Claude/claude_desktop_config.json` (Linux):
+```json
+{
+  "mcpServers": {
+    "neuralforge-mcp": {
+      "command": "wyolo-mcp"
+    }
+  }
+}
+```
+
+#### For Cursor IDE
+Add it in `Settings > Features > MCP` as an `stdio` server using the command `wyolo-mcp`.
+
+---
+
+### Expose Tools (Agentic Capabilities)
+
+Once active, the agent gains access to the following programmatic tools:
+
+| MCP Tool | Description |
+| :--- | :--- |
+| `set_cluster_credentials(ip, cifs_user, cifs_pass)` | Configures host connection details and stores them in `~/.wyolo_mcp_config.json`. |
+| `get_cluster_status()` | Fetches API Gateway health, Celery workers status, and Celery queues telemetry in parallel. |
+| `check_dataset_path(dataset_path)` | Spawns a dockerized check to confirm the existence of a dataset path on the Samba CIFS share. |
+| `validate_dataset_advanced(dataset_path, task)` | Spawns a validation container to parse YAML contents, check paths, and inspect dataset folder integrity. |
+| `generate_training_yaml(config, output_dir)` | Compiles and saves a standardized "Sweeper v2" configuration YAML. |
+| `launch_training(yaml_path)` | Uploads the YAML config file to the REST API and automatically updates the local YAML with the study ID. |
+| `get_study_details(study_id)` | Polls trial statistics, active metrics (e.g. accuracy), and GPU worker details. |
+| `cancel_study(study_id)` | Sends a cancellation query to Celery to terminate active training. |
+
+### Smart Agentic Workflows
+The MCP tools contain built-in system instructions embedded in their docstrings to enforce agentic practices:
+* **Automatic credential recovery:** Once configured, the agent retrieves keys from the configuration store without prompting the user.
+* **Intelligent study tracing:** When asked "how is my training going?", the agent will inspect the current directory, locate generated `.yaml` files, extract the `study_id`, and pull metrics from the cluster automatically.
 
 ---
 
