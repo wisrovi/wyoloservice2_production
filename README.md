@@ -504,7 +504,7 @@ Below is a quick reference mapping of the cluster ports exposed on the Master No
 | Service | Port | Protocol / API | Access Method |
 | :--- | :---: | :--- | :--- |
 | **WDarwin Ops (UI)** | `23432` | HTTP / React SPA | `http://<MASTER_IP>:23432` |
-| **FastAPI Gateway (API)** | `23442` | HTTP / REST API | `http://<MASTER_IP>:23442/health` |
+| **FastAPI Gateway (API)** | `23442` | HTTP / REST API | `http://<MASTER_IP>:23442/health` or `/docs` (Swagger) |
 | **MLflow Server** | `23435` | HTTP / Experiments | `http://<MASTER_IP>:23435` |
 | **PostgreSQL Database** | `23436` | TCP / Optuna Backend | `postgresql://postgres:postgres@<MASTER_IP>:23436/wyoloservice` |
 | **Optuna Dashboard** | `23437` | HTTP / Optimization UI | `http://<MASTER_IP>:23437` |
