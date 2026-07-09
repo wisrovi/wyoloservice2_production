@@ -16,7 +16,7 @@ sweeper:
   direction: maximize
   fitness: "metrics/accuracy_top1"
   study_name: "color_ball_v3.1"
-  tune: true
+  tune: false
   sampler: "TPESampler"
   n_trials: 3
   priority: "low"
