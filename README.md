@@ -823,13 +823,26 @@ We welcome contributions to extend the NeuralForgeAI clúster capabilities. To c
 To maintain clean and granular pull requests, all repository changes must follow the **Single-File Commit Rule**:
 * Every modified or added file must be committed and pushed in a **separate, independent commit** (one unique commit per file).
 
-### 2. Pushing New Worker Container Images
-If you update the worker training scripts (`wtrain` under `wyoloservice2_worker`), rebuild and push the image to Docker Hub so that worker nodes auto-pull the updates:
+### 2. Pushing New Container Images (Executor & Invoker)
+If you update any core containerized component of the cluster, rebuild and push the images to Docker Hub so that worker nodes auto-pull the updates via Watchtower:
+
+#### A. YOLO Training Worker (Executor)
+If you update the worker training scripts (`wtrain` under `wyoloservice2_worker`):
 ```bash
 # Tag and push the final worker image
 docker build -t wisrovi/train_service:worker_executor_v1.0.0 -f Dockerfile .
 docker push wisrovi/train_service:worker_executor_v1.0.0
 ```
+
+#### B. Worker Invoker
+If you update the background queue listener (`wyoloservice2_invoker`):
+1. Bump the software version inside `app/worker_gpu.py` (e.g. `VERSION = "v1.3.3"`).
+2. Compile and push the image using the Makefile. The physical tag must strictly remain `worker_invoker_v1.0.0` for Watchtower compatibility:
+```bash
+make publish
+# This builds and pushes the image under wisrovi/train_service:worker_invoker_v1.0.0
+```
+
 *Note: GPU compute nodes running Watchtower will automatically detect the new image digest and hot-reload active workers within 10 minutes.*
 
 ### 3. Exposing New FastMCP Tools
