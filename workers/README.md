@@ -35,6 +35,15 @@ Running alongside the Invoker is a highly configured Watchtower container. Every
 > [!IMPORTANT]
 > The physical Docker Hub image tag must ALWAYS be strictly kept as **`wisrovi/train_service:worker_invoker_v1.0.0`** to allow **Watchtower** to trigger updates on all 70+ node installations. Software releases and logical versioning (e.g. current release **`v1.3.3`**) are updated internally within the image, but published under the same physical tag.
 
+## ⚙️ Resource Allocation & Limits (Executor)
+To prevent the compute host from freezing or crash lockups during massive YOLO training runs, the **Executor** container enforces strict limits:
+
+*   **CPU Allocation (`nano_cpus`)**: Automatically constrained using `WORKER_CPU_CORES_AVAILABLE` or `WORKER_CPU_CORES` defined in `user.env`. Docker limits compute time slices, leaving remaining capacity open for local daemons.
+*   **RAM Allocation (`mem_limit`)**: Enforced using `WORKER_RAM_MEMORY` from `user.env`.
+*   **Shared Memory (`shm_size`)**:
+    *   **Minimum Threshold**: Guaranteed to be at **least 16 GB** to bypass OOM crash points in PyTorch dataloaders.
+    *   **Scaling Rule**: Automatically inherits the larger value if `WORKER_RAM_MEMORY` is configured above 16 GB (e.g. `28g`); otherwise, SHM defaults to `16g` while RAM limits conform to the lower specified value.
+
 ---
 
 ## 🗺️ Node Lifecycle & Resilience Flow
