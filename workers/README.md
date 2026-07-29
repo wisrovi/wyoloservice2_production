@@ -32,6 +32,9 @@ Instead of relying solely on Docker's `--restart always`, we deploy a custom `sy
 Running alongside the Invoker is a highly configured Watchtower container. Every **10 minutes**, it silently queries Docker Hub. 
 *   If a new version of the Worker image (`wisrovi/train_service:worker_invoker_v1.0.0`) is pushed, Watchtower gracefully stops the current training (if safe), pulls the new layer, and spins up the new container automatically.
 
+> [!IMPORTANT]
+> The physical Docker Hub image tag must ALWAYS be strictly kept as **`wisrovi/train_service:worker_invoker_v1.0.0`** to allow **Watchtower** to trigger updates on all 70+ node installations. Software releases and logical versioning (e.g. current release **`v1.3.1`**) are updated internally within the image, but published under the same physical tag.
+
 ---
 
 ## 🗺️ Node Lifecycle & Resilience Flow
