@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   worker:
-    image: wisrovi/train_service:worker_invoker_v1.1.0
+    image: wisrovi/train_service:worker_invoker_v1.0.0
     build:
       context: ../../../wyoloservice2_invoker/app
     container_name: wyolo_invoker_${WORKER_NAME}
