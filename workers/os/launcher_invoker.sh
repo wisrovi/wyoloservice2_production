@@ -48,9 +48,31 @@ trap cleanup SIGTERM SIGINT
 # Re-create network if it doesn't exist (silent)
 docker network create train_service 2>/dev/null || true
 
-echo "Starting Watchdog loop... (Monitoring containers every 10 minutes)"
+echo "Starting Watchdog loop... (Monitoring and updating configuration every 10 minutes)"
 # --- 3. WATCHDOG LOOP ---
 while true; do
+    # --- AUTO-UPDATE CONFIGURATIONS ---
+    # 1. Download latest docker-compose.yaml
+    TEMP_COMPOSE="./docker-compose.yaml.tmp"
+    GITHUB_COMPOSE_URL="https://raw.githubusercontent.com/wisrovi/wyoloservice2_production/main/workers/docker/docker-compose.yaml"
+    if curl -sSL --connect-timeout 10 --max-time 20 "$GITHUB_COMPOSE_URL" -o "$TEMP_COMPOSE" && [ -s "$TEMP_COMPOSE" ]; then
+        mv "$TEMP_COMPOSE" ./docker-compose.yaml
+        echo "[WATCHDOG] docker-compose.yaml updated from GitHub."
+    else
+        rm -f "$TEMP_COMPOSE"
+    fi
+
+    # 2. Download latest launcher_worker.sh (originally launcher_invoker.sh)
+    TEMP_LAUNCHER="./launcher_worker.sh.tmp"
+    GITHUB_LAUNCHER_URL="https://raw.githubusercontent.com/wisrovi/wyoloservice2_production/main/workers/os/launcher_invoker.sh"
+    if curl -sSL --connect-timeout 10 --max-time 20 "$GITHUB_LAUNCHER_URL" -o "$TEMP_LAUNCHER" && [ -s "$TEMP_LAUNCHER" ]; then
+        chmod +x "$TEMP_LAUNCHER"
+        mv "$TEMP_LAUNCHER" ./launcher_worker.sh
+        echo "[WATCHDOG] launcher_worker.sh updated from GitHub."
+    else
+        rm -f "$TEMP_LAUNCHER"
+    fi
+
     # Run in detached mode. If a container was deleted or stopped, this brings it back up.
     # It runs silently to avoid spamming the systemd journal.
     docker-compose -p "$PROJECT_NAME" up -d --remove-orphans > /dev/null 2>&1
