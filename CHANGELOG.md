@@ -1,5 +1,9 @@
 # Changelog - WDarwin Ops Production
 
+## [2.2.1] - 2026-08-03
+### Added
+- Integrated auto-update synchronization logic in the worker node watchdog loop (`launcher_invoker.sh`) to automatically pull the latest `docker-compose.yaml` and `launcher_worker.sh` from the GitHub production repository main branch every 10 minutes.
+
 ## [2.2.0] - 2026-07-03
 ### Added
 - Strategic **Partnership & Community Outreach Roadmap** in the production hub, planning the pitch of NeuralForge AI to the Ultralytics/YOLO ecosystem.
