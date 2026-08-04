@@ -1,5 +1,9 @@
 # Changelog - WDarwin Ops Production
 
+## [2.2.2] - 2026-08-04
+### Refactored
+- Added dynamic detection for Docker Compose: uses `docker compose` (V2) or fallback to `docker-compose` (V1) dynamically on the host to avoid script execution failures depending on installed version.
+
 ## [2.2.1] - 2026-08-03
 ### Added
 - Integrated auto-update synchronization logic in the worker node watchdog loop (`launcher_invoker.sh`) to automatically pull the latest `docker-compose.yaml` and `launcher_worker.sh` from the GitHub production repository main branch every 10 minutes.
