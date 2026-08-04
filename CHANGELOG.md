@@ -1,5 +1,13 @@
 # Changelog - WDarwin Ops Production
 
+## [2.2.3] - 2026-08-04
+### Added
+- New `gradio_invoker` service running `wisrovi/train_service:worker_invoker_gradio_v1.0.0` on port 7860, mounting `/home/wyolo/train_service_results` for results download.
+
+### Removed
+- Removed the local `build:` context from the `worker` service (now pulled from the Docker Hub image).
+- Deleted the obsolete `docker-compose.extras.yaml`.
+
 ## [2.2.2] - 2026-08-04
 ### Refactored
 - Added dynamic detection for Docker Compose: uses `docker compose` (V2) or fallback to `docker-compose` (V1) dynamically on the host to avoid script execution failures depending on installed version.
