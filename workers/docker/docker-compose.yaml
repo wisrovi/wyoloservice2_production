@@ -46,6 +46,11 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
     volumes:
       - /home/wyolo/train_service_results:/results
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 100M
     logging:
       driver: "json-file"
       options:
