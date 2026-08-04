@@ -33,12 +33,19 @@ echo "Assigned core: $CORE_ASSIGNED"
 # Enter the directory where docker-compose.yaml is located
 cd /home/wisrovi/scripts/ || exit
 
+# Detect whether to use V2 (docker compose) or V1 (docker-compose)
+if docker compose version >/dev/null 2>&1; then
+    COMPOSE_CMD="docker compose"
+else
+    COMPOSE_CMD="docker-compose"
+fi
+
 # Use the worker name as project name to avoid collisions
 PROJECT_NAME="invoker_${WORKER_NAME//./_}"
 
 cleanup() {
     echo "Signal received. Stopping and removing containers gracefully..."
-    docker-compose -p "$PROJECT_NAME" down
+    $COMPOSE_CMD -p "$PROJECT_NAME" down
     exit 0
 }
 
@@ -75,7 +82,7 @@ while true; do
 
     # Run in detached mode. If a container was deleted or stopped, this brings it back up.
     # It runs silently to avoid spamming the systemd journal.
-    docker-compose -p "$PROJECT_NAME" up -d --remove-orphans > /dev/null 2>&1
+    $COMPOSE_CMD -p "$PROJECT_NAME" up -d --remove-orphans > /dev/null 2>&1
     
     # Sleep in background and wait allows the trap to interrupt the sleep instantly
     sleep 600 &
