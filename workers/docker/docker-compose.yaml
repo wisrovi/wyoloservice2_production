@@ -3,8 +3,6 @@ version: '3.8'
 services:
   worker:
     image: wisrovi/train_service:worker_invoker_v1.0.0
-    build:
-      context: ../../../wyoloservice2_invoker/app
     container_name: wyolo_invoker_${WORKER_NAME}
     hostname: wyolo_invoker_${WORKER_NAME}
     restart: always
@@ -24,7 +22,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/wyolo/request:/wyolo/worker/request
       - /home/wyolo/train_service_results:/home/wyolo/train_service_results
-    #      - /home/wisrovi/Documents/train_service_2/wyoloservice2_invoker/app:/app
     labels:
       - "autoheal=true"
       - "com.centurylinklabs.watchtower.enable=true"
@@ -35,6 +32,25 @@ services:
       retries: 3
     command: >
       celery -A worker_gpu worker -Q ${WORKER_NAME},gpus_high,gpus_medium,gpus_low --loglevel=info --concurrency=1 --prefetch-multiplier=1 -Ofair --max-tasks-per-child=1 --without-gossip --without-mingle --without-heartbeat
+
+  gradio_invoker:
+    image: wisrovi/train_service:worker_invoker_gradio_v1.0.0
+    restart: always
+    ports:
+      - "7860:7860"
+    env_file:
+      - ./control_host.env
+      - ./user.env
+    labels:
+      - "autoheal=true"
+      - "com.centurylinklabs.watchtower.enable=true"
+    volumes:
+      - /home/wyolo/train_service_results:/results
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   watchtower:
     image: containrrr/watchtower
