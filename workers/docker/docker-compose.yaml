@@ -37,7 +37,7 @@ services:
     image: wisrovi/train_service:worker_invoker_gradio_v1.0.0
     restart: always
     ports:
-      - "7860:7860"
+      - "23430:7860"
     env_file:
       - ./control_host.env
       - ./user.env
