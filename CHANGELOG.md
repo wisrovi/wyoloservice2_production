@@ -1,5 +1,12 @@
 # Changelog - WDarwin Ops Production
 
+## [2.2.4] - 2026-08-06
+### Changed
+- Remapped the `gradio_invoker` service host port from `7860` to `23430` (`23430:7860`) to avoid conflicts with other host-bound Gradio instances.
+
+### Added
+- Added `deploy.resources.limits` (`cpus: '1.0'`, `memory: 100M`) to the `gradio_invoker` service to cap resource consumption on worker nodes.
+
 ## [2.2.3] - 2026-08-04
 ### Added
 - New `gradio_invoker` service running `wisrovi/train_service:worker_invoker_gradio_v1.0.0` on port 7860, mounting `/home/wyolo/train_service_results` for results download.
