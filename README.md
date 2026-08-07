@@ -1,13 +1,13 @@
 # 🧠 NeuralForgeAI & WDarwin Ops - User & Production Deployment Guide
 
-![Version](https://img.shields.io/badge/version-2.2.3-blue.svg)
+![Version](https://img.shields.io/badge/version-2.2.4-blue.svg)
 ![Status](https://img.shields.io/badge/status-production-success.svg)
 ![Docker](https://img.shields.io/badge/docker-ready-2496ED.svg?logo=docker)
 
 | Metadata | Details |
 | :--- | :--- |
-| **Document Version** | `2.2.3` (Active Release) |
-| **Last Reviewed** | `2026-08-04` |
+| **Document Version** | `2.2.4` (Active Release) |
+| **Last Reviewed** | `2026-08-06` |
 | **Target Audience** | Machine Learning Engineers, MLOps Architects, DevOps Admins |
 | **Cluster Scope** | Distributed GPU Training, Genetic Sweeps & Optuna Orchestration |
 | **Primary Maintainer** | William Steve Rodriguez Villamizar (wisrovi) |
@@ -672,6 +672,7 @@ Below is a quick reference mapping of the cluster ports exposed on the Master No
 | **Redis Broker** | `23438` | TCP / Celery Queues | `redis://<MASTER_IP>:23438/0` |
 | **MinIO Console** | `23448` | HTTP / Storage UI | `http://<MASTER_IP>:23448` |
 | **MinIO S3 Endpoint** | `23449` | HTTP / S3 API | `http://<MASTER_IP>:23449` |
+| **Gradio Invoker (por nodo)** | `23430` | HTTP / Gradio UI | `http://<WORKER_IP>:23430` |
 
 ---
 
@@ -878,3 +879,16 @@ William is a Senior Systems and Software Architect and AI Leader specializing in
 *   **LinkedIn Professional:** [linkedin.com/in/wisrovi-rodriguez](https://www.linkedin.com/in/wisrovi-rodriguez/)
 
 > *"Decoupling complex AI research and transforming it into distributed, scalable industrial applications."*
+
+## Licensing and Usage
+
+This project uses a **Dual License** model:
+- **Community/Research**: Licensed under the AGPLv3. See [LICENSE](LICENSE).
+- **Commercial**: Requires a commercial license. See [COMMERCIAL.md](COMMERCIAL.md) for details.
+
+### Academic Research
+If you use this project in academic research, you are required to cite this repository using the provided `CITATION.cff` and notify the author with a link to your publication.
+
+
+## Changelog
+- Bumped version due to License update to AGPLv3 and Dual Licensing model.
