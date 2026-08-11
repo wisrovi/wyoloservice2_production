@@ -194,6 +194,12 @@ mlflow-artifacts/
         │   │   ├── PR_curve.png
         │   │   ├── confusion_matrix.png
         │   │   └── results.csv
+        │   ├── extras/           # Deep Research & Forensic analysis
+        │   │   ├── GLOBAL_RESEARCH_EXPLANATION.md # Cross-module AI scientific analysis
+        │   │   ├── llm/          # Consolidated reports (Markdown/DOCX)
+        │   │   ├── model_focus/  # Eigen-CAM & Grad-CAM visual heatmaps with DESCRIPTION.md
+        │   │   ├── quantitative_xai/ # Quantitative explainability metrics with DESCRIPTION.md
+        │   │   └── [adversarial, bootstrap, robustness, etc.]/ # Forensic modules with their DESCRIPTION.md
         │   └── training_artifacts/ # Run config copies
         │       ├── base_config.yaml
         │       └── data.yaml
@@ -398,6 +404,18 @@ Once a trial completes, you can retrieve the trained weights (`best.pt`) to depl
         'best.pt'
     )
     ```
+
+### 5. See logs in local
+
+To monitor the entire orchestration lifecycle (Invoker daemon):
+```bash
+docker logs -f --tail 100 wyolo_invoker_$(hostname -I | awk '{print $1}')
+```
+
+To view the raw output of the ephemeral training container (Executor):
+```bash
+docker logs -f $(docker ps -a --filter "name=executor" --format "{{.ID}}")
+```
 
 ---
 
