@@ -139,6 +139,7 @@ The NeuralForgeAI ecosystem is composed of 7 sibling repositories, orchestrating
 | **Worker Invoker** | `wyoloservice2_invoker` | [wisrovi/wyoloservice2_invoker](https://github.com/wisrovi/wyoloservice2_invoker) | GPU-node background daemon consuming Redis tasks queue and launching executor containers. |
 | **YOLO Training Worker** | `wyoloservice2_worker` | [wisrovi/wyoloservice2_worker](https://github.com/wisrovi/wyoloservice2_worker) | Ephemeral YOLO container codebase (`wtrain`) performing real dataset validation and model training on GPUs. |
 | **Model Context Protocol** | `wyoloservice2_mcp` | [wisrovi/wyoloservice2_mcp](https://github.com/wisrovi/wyoloservice2_mcp) | FastMCP server exposing tools to LLMs (Claude, Antigravity) for automated, natural-language cluster control. |
+| **Research & Papers** | `wyoloservice2_paper` | [wisrovi/wyoloservice2_paper](https://github.com/wisrovi/wyoloservice2_paper) | Research papers, LaTeX drafts, methodological definitions, and the ecosystem's global publication Roadmap. |
 
 ---
 
