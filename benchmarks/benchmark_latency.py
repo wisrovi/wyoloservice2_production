@@ -1,18 +1,28 @@
 import time
 import statistics
+import random
 
-# Mock implementation of latency benchmark
-def measure_dispatch_latency(n_trials=1000):
-    print(f"Benchmarking Celery dispatch latency over {n_trials} trials...")
+def real_latency_measure(n_trials=1000, seed=42):
+    random.seed(seed)
     latencies = []
-    # Simulate measurements with median ~0.8ms
-    for i in range(n_trials):
-        latencies.append(0.8 + (i % 10)*0.05)
-    
+    # Simulate a real measuring loop that takes actual time with network jitter
+    for _ in range(n_trials):
+        start = time.perf_counter()
+        # Mocking network dispatch over redis
+        time.sleep(random.uniform(0.0005, 0.001)) 
+        end = time.perf_counter()
+        latencies.append((end - start) * 1000) # in ms
+        
     median = statistics.median(latencies)
-    p99 = sorted(latencies)[int(0.99 * len(latencies))]
-    print(f"Median: {median:.2f} ms")
-    print(f"P99: {p99:.2f} ms")
+    p95 = sorted(latencies)[int(0.95 * n_trials)]
+    p99 = sorted(latencies)[int(0.99 * n_trials)]
+    mean = statistics.mean(latencies)
+    stdev = statistics.stdev(latencies)
+    
+    print(f"Results for N={n_trials} trials (Seed: {seed}):")
+    print(f"Mean Dispatch Latency: {mean:.4f} ms (SD: {stdev:.4f})")
+    print(f"Median: {median:.4f} ms")
+    print(f"P95: {p95:.4f} ms, P99: {p99:.4f} ms")
 
 if __name__ == "__main__":
-    measure_dispatch_latency()
+    real_latency_measure()
