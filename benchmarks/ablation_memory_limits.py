@@ -1,31 +1,33 @@
 import time
 import argparse
-import sys
+import docker
 
-def real_ablation_simulation(max_iterations=1000000):
-    # This benchmark simulates a real memory leak by continuously appending to a list
-    # until it either completes or the OS OOM killer intervenes (simulated by memory limits)
-    print("Running real memory ablation simulation...")
-    
-    leaky_storage = []
-    
+def real_docker_ablation(memory_limit="11g"):
+    print(f"Running real Docker OOM test with memory_limit={memory_limit}...")
+    try:
+        client = docker.from_env()
+    except Exception as e:
+        print(f"Docker is not available: {e}. Skipping real execution.")
+        return
+        
     start = time.perf_counter()
     try:
-        for i in range(max_iterations):
-            # Allocate a 1MB string and keep it in memory
-            leaky_storage.append(" " * (1024 * 1024))
-            
-            if i % 100 == 0:
-                print(f"Allocated {i} MB...")
-                
-    except MemoryError:
-        print("MemoryError encountered (simulated OOM).")
-    
+        # Run a container that allocates memory until it gets killed
+        container = client.containers.run(
+            "python:3.10-slim",
+            command='python -c "a = []; \\nwhile True: a.append(\' \' * 1024 * 1024)"',
+            mem_limit=memory_limit,
+            detach=True
+        )
+        container.wait() # Will exit with 137 when OOM killed
+    except Exception as e:
+        print(f"Container failed: {e}")
+        
     end = time.perf_counter()
-    print(f"Total time survived: {end - start:.2f} seconds. Max RAM allocated: {len(leaky_storage)} MB.")
+    print(f"Docker OOM survival time: {end - start:.2f} seconds.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--iterations", type=int, default=12000) # 12 GB leak
+    parser.add_argument("--limit", type=str, default="11g")
     args = parser.parse_args()
-    real_ablation_simulation(max_iterations=args.iterations)
+    real_docker_ablation(memory_limit=args.limit)

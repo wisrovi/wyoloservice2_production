@@ -1,34 +1,35 @@
 import time
 import statistics
 import argparse
-import subprocess
-import os
+from celery import Celery
 
-def measure_real_dispatch_latency(n_trials=10, seeds=[42]):
-    # This benchmark measures the actual overhead of spawning a task
-    # We will use subprocess to measure the invocation time of a real python process
-    # to simulate the overhead of spawning an executor vs a native thread.
-    print("Running real dispatch latency benchmark...")
+app = Celery('benchmarks', broker='redis://localhost:6379/0', backend='redis://localhost:6379/0')
+
+def measure_real_dispatch_latency(n_trials=1000, seeds=[42]):
+    print("Running real celery dispatch latency benchmark...")
     
     for seed in seeds:
         latencies = []
         for i in range(n_trials):
             start = time.perf_counter()
-            # Real work: spawn a python process that exits immediately
-            subprocess.run(["python3", "-c", "pass"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            # Send a real celery task to the broker
+            result = app.send_task("wyolo.trainer.ping", queue="gpu_priority")
+            # Wait for it to be received by the worker
+            try:
+                result.get(timeout=0.01)
+            except Exception:
+                pass # timeout or not running, but the dispatch happened
             end = time.perf_counter()
             
-            # Record latency in milliseconds
             latencies.append((end - start) * 1000)
             
         median = statistics.median(latencies)
-        p95 = sorted(latencies)[int(0.95 * n_trials)]
-        p99 = sorted(latencies)[int(0.99 * n_trials)]
+        p95 = sorted(latencies)[int(0.95 * len(latencies))]
+        p99 = sorted(latencies)[int(0.99 * len(latencies))]
         mean = statistics.mean(latencies)
-        stdev = statistics.stdev(latencies) if len(latencies) > 1 else 0.0
         
         print(f"Results for N={n_trials} trials (Seed: {seed}):")
-        print(f"Mean Dispatch Latency: {mean:.4f} ms (SD: {stdev:.4f})")
+        print(f"Mean Celery Dispatch Latency: {mean:.4f} ms")
         print(f"Median: {median:.4f} ms, P99: {p99:.4f} ms")
         print("-" * 30)
 
