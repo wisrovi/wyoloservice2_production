@@ -3,7 +3,7 @@ import statistics
 import argparse
 from celery import Celery
 
-app = Celery('benchmarks', broker='redis://localhost:6379/0', backend='redis://localhost:6379/0')
+app = Celery('benchmarks', broker='redis://192.168.10.252:23437/0', backend='redis://192.168.10.252:23437/0')
 
 def measure_real_dispatch_latency(n_trials=1000, seeds=[42]):
     print("Running real celery dispatch latency benchmark...")
