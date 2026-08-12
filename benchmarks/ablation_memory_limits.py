@@ -1,27 +1,31 @@
 import time
-import random
+import argparse
+import sys
 
-def real_ablation_simulation(seed=123):
-    random.seed(seed)
-    print("Running memory limits ablation simulation (N=3 hosts, 72h window)...")
+def real_ablation_simulation(max_iterations=1000000):
+    # This benchmark simulates a real memory leak by continuously appending to a list
+    # until it either completes or the OS OOM killer intervenes (simulated by memory limits)
+    print("Running real memory ablation simulation...")
     
-    # Simulate the memory trajectory
-    mem_monolithic = []
-    mem_isolated = []
+    leaky_storage = []
     
-    current_mono = 4.0 # Base RAM GB
-    current_iso = 4.0
-    
-    for hour in range(72):
-        current_mono += random.uniform(0.5, 2.0) # Leak
-        if current_mono > 12.0:
-            print(f"[Monolithic] OOM Kill at hour {hour}! Host crash.")
-            break
+    start = time.perf_counter()
+    try:
+        for i in range(max_iterations):
+            # Allocate a 1MB string and keep it in memory
+            leaky_storage.append(" " * (1024 * 1024))
             
-        current_iso = 4.0 + random.uniform(0.1, 7.5) # Ephemeral container peak
-        if current_iso > 11.5: current_iso = 11.5 # Capped
+            if i % 100 == 0:
+                print(f"Allocated {i} MB...")
+                
+    except MemoryError:
+        print("MemoryError encountered (simulated OOM).")
     
-    print("[Isolated] Survived 72h. Max observed RAM: 11.5 GB")
+    end = time.perf_counter()
+    print(f"Total time survived: {end - start:.2f} seconds. Max RAM allocated: {len(leaky_storage)} MB.")
 
 if __name__ == "__main__":
-    real_ablation_simulation()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--iterations", type=int, default=12000) # 12 GB leak
+    args = parser.parse_args()
+    real_ablation_simulation(max_iterations=args.iterations)
