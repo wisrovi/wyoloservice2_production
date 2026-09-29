@@ -17,7 +17,7 @@ cd "$TARGET_DIR" || exit 1
 
 # Download the tarball and extract ONLY the 'workers' directory
 # We use standard tools (curl and tar) so it works on any bare Linux machine
-if curl -sSL https://github.com/wisrovi/wyoloservice2_production/archive/refs/heads/main.tar.gz | tar -xz --strip-components=2 "wyoloservice2_production-main/workers"; then
+if curl -sSL https://github.com/wisrovi/wyoloservice2_production/archive/refs/heads/main.tar.gz | tar -xz --strip-components=2 "wyoloservice2_production-main/02 workers"; then
     echo "✅ Download complete!"
     echo "Files have been saved to: $(pwd)"
     echo ""
