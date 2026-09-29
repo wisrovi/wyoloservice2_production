@@ -278,7 +278,7 @@ stateDiagram-v2
 ### Step 2: Compute Nodes Installation (GPU Workers)
 On every machine equipped with an NVIDIA GPU, execute the automated Invoker installation:
 ```bash
-curl -o download.sh https://raw.githubusercontent.com/wisrovi/wyoloservice2_production/refs/heads/main/workers/download.sh && sh download.sh && cd wyolo_worker_setup && sudo ./install.sh
+curl -o download.sh https://raw.githubusercontent.com/wisrovi/wyoloservice2_production/refs/heads/main/02%20workers/download.sh && sh download.sh && cd wyolo_worker_setup && sudo ./install.sh
 ```
 **What does this script do?**
 1. Sets up the `wyolo_worker.service` daemon (an indestructible Systemd Watchdog that restarts the worker immediately upon failures).
