@@ -61,7 +61,7 @@ while true; do
     # --- AUTO-UPDATE CONFIGURATIONS ---
     # 1. Download latest docker-compose.yaml
     TEMP_COMPOSE="./docker-compose.yaml.tmp"
-    GITHUB_COMPOSE_URL="https://raw.githubusercontent.com/wisrovi/wyoloservice2_production/main/workers/docker/docker-compose.yaml"
+    GITHUB_COMPOSE_URL="https://raw.githubusercontent.com/wisrovi/wyoloservice2_production/main/02 workers/docker/docker-compose.yaml"
     if curl -sSL --connect-timeout 10 --max-time 20 "$GITHUB_COMPOSE_URL" -o "$TEMP_COMPOSE" && [ -s "$TEMP_COMPOSE" ]; then
         mv "$TEMP_COMPOSE" ./docker-compose.yaml
         echo "[WATCHDOG] docker-compose.yaml updated from GitHub."
@@ -71,7 +71,7 @@ while true; do
 
     # 2. Download latest launcher_worker.sh (originally launcher_invoker.sh)
     TEMP_LAUNCHER="./launcher_worker.sh.tmp"
-    GITHUB_LAUNCHER_URL="https://raw.githubusercontent.com/wisrovi/wyoloservice2_production/main/workers/os/launcher_invoker.sh"
+    GITHUB_LAUNCHER_URL="https://raw.githubusercontent.com/wisrovi/wyoloservice2_production/main/02 workers/os/launcher_invoker.sh"
     if curl -sSL --connect-timeout 10 --max-time 20 "$GITHUB_LAUNCHER_URL" -o "$TEMP_LAUNCHER" && [ -s "$TEMP_LAUNCHER" ]; then
         chmod +x "$TEMP_LAUNCHER"
         mv "$TEMP_LAUNCHER" ./launcher_worker.sh
