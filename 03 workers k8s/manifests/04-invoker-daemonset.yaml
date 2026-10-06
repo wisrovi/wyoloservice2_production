@@ -8,6 +8,10 @@ metadata:
     app.kubernetes.io/part-of: train-service2
     app.kubernetes.io/component: task-invoker
 spec:
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: "100%"
   selector:
     matchLabels:
       app: wyolo-invoker
@@ -52,33 +56,33 @@ spec:
             - |
               mkdir -p /app/config
               USER_ENV="/app/config/user.env"
-              echo "USER=wisrovi" > "$USER_ENV"
-              echo "TZ=Europe/Madrid" >> "$USER_ENV"
-              echo "WORKER_HOST=${WORKER_HOST}" >> "$USER_ENV"
-              echo "WORKER_HOSTNAME=${WORKER_HOSTNAME}" >> "$USER_ENV"
-              echo "WORKER_OS=$(uname -s)" >> "$USER_ENV"
-              echo "WORKER_KERNEL_VERSION=$(uname -r)" >> "$USER_ENV"
-              echo "WORKER_CPU_CORES=$(nproc)" >> "$USER_ENV"
-              echo "WORKER_GATEWAY=$(ip route | grep default | awk '{print $3}' | head -n 1)" >> "$USER_ENV"
-              echo "WORKER_NETWORK_INTERFACE=$(ip route | grep default | awk '{print $5}' | head -n 1)" >> "$USER_ENV"
-              echo "WORKER_APP_ENV=production" >> "$USER_ENV"
-              echo "WORKER_CURRENT_DATE=$(date '+%Y-%m-%d')" >> "$USER_ENV"
-              echo "WORKER_CURRENT_TIME=$(date '+%H:%M:%S')" >> "$USER_ENV"
+              echo "USER=\"wisrovi\"" > "$USER_ENV"
+              echo "TZ=\"Europe/Madrid\"" >> "$USER_ENV"
+              echo "WORKER_HOST=\"${WORKER_HOST}\"" >> "$USER_ENV"
+              echo "WORKER_HOSTNAME=\"${WORKER_HOSTNAME}\"" >> "$USER_ENV"
+              echo "WORKER_OS=\"$(uname -s)\"" >> "$USER_ENV"
+              echo "WORKER_KERNEL_VERSION=\"$(uname -r)\"" >> "$USER_ENV"
+              echo "WORKER_CPU_CORES=\"$(nproc)\"" >> "$USER_ENV"
+              echo "WORKER_GATEWAY=\"$(ip route | grep default | awk '{print $3}' | head -n 1)\"" >> "$USER_ENV"
+              echo "WORKER_NETWORK_INTERFACE=\"$(ip route | grep default | awk '{print $5}' | head -n 1)\"" >> "$USER_ENV"
+              echo "WORKER_APP_ENV=\"production\"" >> "$USER_ENV"
+              echo "WORKER_CURRENT_DATE=\"$(date '+%Y-%m-%d')\"" >> "$USER_ENV"
+              echo "WORKER_CURRENT_TIME=\"$(date '+%H:%M:%S')\"" >> "$USER_ENV"
 
               if command -v nvidia-smi &> /dev/null; then
-                  echo "WORKER_GPU_COUNT=$(nvidia-smi --query-gpu=count --format=csv,noheader | head -n 1)" >> "$USER_ENV"
-                  echo "WORKER_GPU_MODEL=$(nvidia-smi --query-gpu=name --format=csv,noheader | head -n 1)" >> "$USER_ENV"
-                  echo "WORKER_GPU_MEMORY=$(nvidia-smi --query-gpu=memory.total --format=csv,noheader | head -n 1)" >> "$USER_ENV"
+                  echo "WORKER_GPU_COUNT=\"$(nvidia-smi --query-gpu=count --format=csv,noheader | head -n 1)\"" >> "$USER_ENV"
+                  echo "WORKER_GPU_MODEL=\"$(nvidia-smi --query-gpu=name --format=csv,noheader | head -n 1)\"" >> "$USER_ENV"
+                  echo "WORKER_GPU_MEMORY=\"$(nvidia-smi --query-gpu=memory.total --format=csv,noheader | head -n 1)\"" >> "$USER_ENV"
               else
-                  echo "WORKER_GPU_COUNT=0" >> "$USER_ENV"
-                  echo "WORKER_GPU_MODEL=none" >> "$USER_ENV"
-                  echo "WORKER_GPU_MEMORY=0" >> "$USER_ENV"
+                  echo "WORKER_GPU_COUNT=\"0\"" >> "$USER_ENV"
+                  echo "WORKER_GPU_MODEL=\"none\"" >> "$USER_ENV"
+                  echo "WORKER_GPU_MEMORY=\"0\"" >> "$USER_ENV"
               fi
 
               MEM_TOTAL=$(awk '/^MemTotal:/ {print $2}' /proc/meminfo)
-              echo "WORKER_RAM_MEMORY=$((MEM_TOTAL * 8 / 10 / 1048576))g" >> "$USER_ENV"
-              echo "WORKER_CPU_CORES_AVAILABLE=$(( $(nproc) - 1 )).0" >> "$USER_ENV"
-              echo "PRIVATE_QUEUE=${WORKER_HOST}" >> "$USER_ENV"
+              echo "WORKER_RAM_MEMORY=\"$((MEM_TOTAL * 8 / 10 / 1048576))g\"" >> "$USER_ENV"
+              echo "WORKER_CPU_CORES_AVAILABLE=\"$(( $(nproc) - 1 )).0\"" >> "$USER_ENV"
+              echo "PRIVATE_QUEUE=\"${WORKER_HOST}\"" >> "$USER_ENV"
               echo "=== [INIT] Generated /app/config/user.env successfully: ==="
               cat "$USER_ENV"
           volumeMounts:
@@ -141,11 +145,12 @@ spec:
                 set +a
               fi
               if [ -n "$MY_POD_NAME" ] && [ -f /var/run/secrets/kubernetes.io/serviceaccount/token ]; then
-                echo "=== [INIT] Labeling pod ${MY_POD_NAME} with node=${WORKER_HOSTNAME} for local log streaming ==="
+                GPU_LABEL=$(echo "${WORKER_GPU_MODEL:-unknown}" | tr ' ' '-' | tr -cd '[:alnum:]-._' | cut -c1-63)
+                echo "=== [INIT] Labeling pod ${MY_POD_NAME} with node=${WORKER_HOSTNAME}, ip=${WORKER_HOST}, gpu=${GPU_LABEL} ==="
                 curl -s -k -X PATCH \
                   -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
                   -H "Content-Type: application/strategic-merge-patch+json" \
-                  -d "{\"metadata\":{\"labels\":{\"node\":\"${WORKER_HOSTNAME}\"}}}" \
+                  -d "{\"metadata\":{\"labels\":{\"node\":\"${WORKER_HOSTNAME}\",\"hostname\":\"${WORKER_HOSTNAME}\",\"ip\":\"${WORKER_HOST}\",\"worker-ip\":\"${WORKER_HOST}\",\"gpu\":\"${GPU_LABEL}\"},\"annotations\":{\"worker.neuralforge.ai/ip\":\"${WORKER_HOST}\",\"worker.neuralforge.ai/hostname\":\"${WORKER_HOSTNAME}\",\"worker.neuralforge.ai/gpu\":\"${WORKER_GPU_MODEL}\"}}}" \
                   https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/namespaces/${K8S_NAMESPACE}/pods/${MY_POD_NAME} || true
               fi
               echo "=== Starting Invoker Celery Worker on Queue: ${WORKER_HOST},gpus_high,gpus_medium,gpus_low ==="
