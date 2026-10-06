@@ -20,6 +20,7 @@ metadata:
     app.kubernetes.io/name: wyolo-executor
     app.kubernetes.io/part-of: train-service2
     app.kubernetes.io/component: gpu-trainer
+    node: "${WORKER_HOSTNAME}"
     trial_id: "${TRIAL_ID}"
 spec:
   ttlSecondsAfterFinished: 600  # Retains logs in Dozzle for 10 minutes post-training
@@ -28,6 +29,7 @@ spec:
     metadata:
       labels:
         app: wyolo-executor
+        node: "${WORKER_HOSTNAME}"
         trial_id: "${TRIAL_ID}"
     spec:
       nodeName: "${WORKER_HOSTNAME}"  # Guarantees co-location on Invoker's physical node
