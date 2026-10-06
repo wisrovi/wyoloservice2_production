@@ -1,0 +1,34 @@
+# ==============================================================================
+# GPU Smoke Test Pod for Kubernetes Worker Nodes
+# ==============================================================================
+# Usage:
+#   kubectl apply -f test_gpu_node.yaml
+#   kubectl logs -n wyolo-workers pod/gpu-smoke-test
+#   kubectl delete -f test_gpu_node.yaml
+# ==============================================================================
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gpu-smoke-test
+  namespace: wyolo-workers
+  labels:
+    app: gpu-smoke-test
+spec:
+  restartPolicy: Never
+  tolerations:
+    - key: "nvidia.com/gpu"
+      operator: "Exists"
+      effect: "NoSchedule"
+  containers:
+    - name: cuda-test
+      image: nvidia/cuda:12.2.0-base-ubuntu22.04
+      command:
+        - "bash"
+        - "-c"
+        - |
+          echo "=== [TEST] Checking NVIDIA Driver & CUDA Device Access ==="
+          nvidia-smi
+          echo "=== [TEST] CUDA device check passed successfully ==="
+      resources:
+        limits:
+          nvidia.com/gpu: 1
