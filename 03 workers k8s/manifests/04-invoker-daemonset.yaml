@@ -155,6 +155,12 @@ spec:
             - name: app-config-dir
               mountPath: /app/config
             - name: host-train-results
+              mountPath: /wyolo/worker/train_service_results
+            - name: host-request
+              mountPath: /wyolo/worker/request
+            - name: host-events
+              mountPath: /wyolo/worker/events
+            - name: host-train-results
               mountPath: /home/wyolo/train_service_results
             - name: host-request
               mountPath: /home/wyolo/request
