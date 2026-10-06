@@ -84,15 +84,20 @@ When a new or freshly formatted computer with NVIDIA GPUs is added to the cluste
 
 ## 🖥️ Viewing Logs via Dozzle
 
-Users who previously used Portainer to inspect training logs now have an even simpler, cleaner experience:
+Users inspecting training logs have a clean, node-isolated experience:
 
 1. Open a web browser on the worker machine:  
    👉 **`http://localhost:8888`**  
    *(Or from a remote workstation on the local network: `http://<WORKER_IP>:8888`)*
-2. In the left navigation sidebar:
-   * **`wyolo-invoker`**: Displays the persistent invoker daemon listening for Celery tasks.
+2. **Node-Isolated Streaming Architecture:**
+   * Each node's Dozzle DaemonSet operates in native Kubernetes mode (`DOZZLE_MODE=k8s`, `DOZZLE_NAMESPACE=train-service`).
+   * It dynamically binds to its host's identity using the Downward API (`spec.nodeName`) and applies `DOZZLE_FILTER: node=$(MY_NODE_NAME)`.
+   * On startup, the `wyolo-invoker` pod automatically self-labels with its assigned physical node (`node: ${WORKER_HOSTNAME}`) via the in-cluster Kubernetes API (`wyolo-invoker-sa`).
+   * When opening `http://localhost:8888`, Dozzle exclusively displays the **local Invoker and local Executor pods** scheduled on that specific machine, filtering out all other cluster nodes and external host containers.
+3. In the left navigation sidebar:
+   * **`wyolo-invoker`**: Displays the persistent invoker daemon listening for Celery tasks on this node.
    * **`wyolo-executor-trial-XXX`**: Appears in real time the moment a training task begins.
-3. Features available in Dozzle:
+4. Features available in Dozzle:
    * **Live ANSI Color Streaming**: Real-time YOLO progress bars, epochs, losses, and validation metrics.
    * **Instant Search / Regex**: Filter by `epoch`, `loss`, `CUDA`, or `error` without reloading.
    * **Resource Monitoring**: Live CPU and RAM usage charts for the container.
