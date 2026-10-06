@@ -113,6 +113,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
           # 3. CPU and RAM Limits for the Invoker Orchestrator
           resources:
             requests:
@@ -130,6 +134,14 @@ spec:
                 set -a
                 source /app/config/user.env
                 set +a
+              fi
+              if [ -n "$MY_POD_NAME" ] && [ -f /var/run/secrets/kubernetes.io/serviceaccount/token ]; then
+                echo "=== [INIT] Labeling pod ${MY_POD_NAME} with node=${WORKER_HOSTNAME} for local log streaming ==="
+                curl -s -k -X PATCH \
+                  -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
+                  -H "Content-Type: application/strategic-merge-patch+json" \
+                  -d "{\"metadata\":{\"labels\":{\"node\":\"${WORKER_HOSTNAME}\"}}}" \
+                  https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/namespaces/${K8S_NAMESPACE}/pods/${MY_POD_NAME} || true
               fi
               echo "=== Starting Invoker Celery Worker on Queue: ${WORKER_HOST},gpus_high,gpus_medium,gpus_low ==="
               exec celery -A worker_gpu worker -E -Q ${WORKER_HOST},gpus_high,gpus_medium,gpus_low --loglevel=info --concurrency=1 --prefetch-multiplier=1 -Ofair --max-tasks-per-child=1
