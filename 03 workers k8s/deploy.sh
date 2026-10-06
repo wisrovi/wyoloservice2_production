@@ -70,6 +70,9 @@ kubectl create configmap train-service-global-config \
     --from-literal=CIFS_SERVER="${CONTROL_HOST}" \
     --from-literal=CIFS_SHARE_NAME="${CIFS_SHARE_NAME:-wyolo}" \
     --from-literal=CIFS_SHARE_PATH="//${CONTROL_HOST}/${CIFS_SHARE_NAME:-wyolo}" \
+    --from-literal=NUM_CURRENT_TRAIN="${NUM_CURRENT_TRAIN:-1}" \
+    --from-literal=MAX_GPU="${MAX_GPU:-30}" \
+    --from-literal=WORKER_NAME="${WORKER_NAME:-worker_wisrovi}" \
     --from-literal=EXECUTOR_TIMEOUT_SECONDS="43200" \
     --from-literal=EXECUTOR_IMAGE="${EXECUTOR_IMAGE:-wisrovi/train_service:worker_executor_v1.0.0}" \
     --from-literal=DEFAULT_RESULTS_DIR="/wyolo/worker/train_service_results" \
