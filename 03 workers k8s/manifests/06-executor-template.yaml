@@ -15,7 +15,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: wyolo-executor-trial-${TRIAL_ID}
-  namespace: wyolo-workers
+  namespace: wtrain-service
   labels:
     app.kubernetes.io/name: wyolo-executor
     app.kubernetes.io/part-of: train-service2
