@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: wyolo-invoker
-  namespace: wyolo-workers
+  namespace: wtrain-service
   labels:
     app.kubernetes.io/name: wyolo-invoker
     app.kubernetes.io/part-of: train-service2
