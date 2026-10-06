@@ -16,6 +16,7 @@ spec:
       labels:
         app: wyolo-dozzle
     spec:
+      serviceAccountName: dozzle-sa
       nodeSelector:
         nvidia.com/gpu.present: "true"
       tolerations:
@@ -26,15 +27,23 @@ spec:
         - name: dozzle
           image: amir20/dozzle:latest
           imagePullPolicy: IfNotPresent
-          securityContext:
-            privileged: true
           ports:
             - name: http
               containerPort: 8080
               hostPort: 8888  # Accessible at http://localhost:8888 on each node
           env:
+            - name: DOZZLE_MODE
+              value: "k8s"
+            - name: DOZZLE_NAMESPACE
+              value: "train-service"
             - name: DOZZLE_LEVEL
               value: "info"
+            - name: MY_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: DOZZLE_FILTER
+              value: "node=$(MY_NODE_NAME)"
           resources:
             requests:
               cpu: "50m"
@@ -42,11 +51,3 @@ spec:
             limits:
               cpu: "250m"
               memory: "150Mi"
-          volumeMounts:
-            - name: docker-socket
-              mountPath: /var/run/docker.sock
-      volumes:
-        - name: docker-socket
-          hostPath:
-            path: /var/run/docker.sock
-            type: Socket
