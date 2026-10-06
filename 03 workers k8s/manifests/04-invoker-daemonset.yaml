@@ -16,6 +16,7 @@ spec:
       labels:
         app: wyolo-invoker
     spec:
+      priorityClassName: system-node-critical
       serviceAccountName: wyolo-invoker-sa
       nodeSelector:
         nvidia.com/gpu.present: "true"
@@ -23,6 +24,10 @@ spec:
         - key: "nvidia.com/gpu"
           operator: "Exists"
           effect: "NoSchedule"
+        - key: "node.kubernetes.io/disk-pressure"
+          operator: "Exists"
+        - key: "node.kubernetes.io/memory-pressure"
+          operator: "Exists"
       initContainers:
         - name: hardware-detector
           image: nvidia/cuda:12.2.0-base-ubuntu22.04
