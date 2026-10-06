@@ -1,0 +1,94 @@
+# ==============================================================================
+# TEMPLATE: Ephemeral YOLO Executor Pod / Job
+# ==============================================================================
+# This manifest illustrates the exact structure dynamically spawned by the
+# Invoker via the Kubernetes API when a training task is received from Redis.
+#
+# Key Architectural Highlights:
+# 1. nodeName is pinned to the Invoker's current node to enforce local execution.
+# 2. Local host volumes are mounted for zero-latency I/O (weights, configs).
+# 3. /dev/shm uses an in-memory volume (emptyDir) to bypass PyTorch dataloader OOM.
+# 4. ttlSecondsAfterFinished keeps the Pod in 'Completed' state for user inspection
+#    via Dozzle before automatic garbage collection.
+# ==============================================================================
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: wyolo-executor-trial-${TRIAL_ID}
+  namespace: wyolo-workers
+  labels:
+    app.kubernetes.io/name: wyolo-executor
+    app.kubernetes.io/part-of: train-service2
+    app.kubernetes.io/component: gpu-trainer
+    trial_id: "${TRIAL_ID}"
+spec:
+  ttlSecondsAfterFinished: 600  # Retains logs in Dozzle for 10 minutes post-training
+  backoffLimit: 0               # Do not retry automatically; let Invoker manage retries
+  template:
+    metadata:
+      labels:
+        app: wyolo-executor
+        trial_id: "${TRIAL_ID}"
+    spec:
+      nodeName: "${WORKER_HOSTNAME}"  # Guarantees co-location on Invoker's physical node
+      restartPolicy: Never
+      containers:
+        - name: executor
+          image: wisrovi/train_service:worker_executor_v1.0.0
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          envFrom:
+            - configMapRef:
+                name: train-service-global-config
+            - secretRef:
+                name: train-service-secrets
+          env:
+            - name: WORKER_HOST
+              value: "${WORKER_HOST}"
+            - name: TRIAL_ID
+              value: "${TRIAL_ID}"
+          resources:
+            requests:
+              cpu: "4"
+              memory: "16Gi"
+              nvidia.com/gpu: 1
+            limits:
+              cpu: "8"
+              memory: "28Gi"
+              nvidia.com/gpu: 1
+          volumeMounts:
+            - name: dshm
+              mountPath: /dev/shm
+            - name: host-train-results
+              mountPath: /wyolo/worker/train_service_results
+            - name: host-request
+              mountPath: /wyolo/worker/request
+            - name: host-events
+              mountPath: /wyolo/worker/events
+          command:
+            - "bash"
+            - "-c"
+            - |
+              nvidia-smi && \
+              echo "[EXECUTOR] Mounting CIFS dataset..." && \
+              /usr/local/bin/mount-cifs.sh && \
+              echo "[EXECUTOR] Mount OK. Starting YOLO training..." && \
+              python main.py --file /wyolo/worker/request/config_train.yaml
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 16Gi
+        - name: host-train-results
+          hostPath:
+            path: /opt/wyolo/train_service_results
+            type: DirectoryOrCreate
+        - name: host-request
+          hostPath:
+            path: /opt/wyolo/request
+            type: DirectoryOrCreate
+        - name: host-events
+          hostPath:
+            path: /opt/wyolo/events
+            type: DirectoryOrCreate
