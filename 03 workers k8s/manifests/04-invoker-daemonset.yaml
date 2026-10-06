@@ -82,7 +82,7 @@ spec:
       containers:
         - name: invoker
           image: wisrovi/train_service:worker_invoker_v1.0.0
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           securityContext:
             privileged: true
           # 1. Global Cluster Environment Variables
