@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: wyolo-dozzle
+  namespace: wyolo-workers
+  labels:
+    app.kubernetes.io/name: dozzle-log-viewer
+    app.kubernetes.io/part-of: train-service2
+    app.kubernetes.io/component: log-streaming-ui
+spec:
+  selector:
+    matchLabels:
+      app: wyolo-dozzle
+  template:
+    metadata:
+      labels:
+        app: wyolo-dozzle
+    spec:
+      serviceAccountName: dozzle-sa
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Exists"
+          effect: "NoSchedule"
+      containers:
+        - name: dozzle
+          image: amir20/dozzle:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              hostPort: 8888  # Directly accessible at http://localhost:8888 on each node
+          env:
+            - name: DOZZLE_LEVEL
+              value: "info"
+            # Optional: restrict view to wyolo-workers namespace or keep cluster-wide
+            - name: DOZZLE_FILTER
+              value: "namespace=wyolo-workers"
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "40Mi"
+            limits:
+              cpu: "250m"
+              memory: "150Mi"
