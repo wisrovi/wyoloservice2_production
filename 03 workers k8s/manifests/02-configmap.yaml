@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: train-service-global-config
+  namespace: wyolo-workers
+  labels:
+    app.kubernetes.io/name: train-service-global-config
+    app.kubernetes.io/part-of: train-service2
+data:
+  # Master Control Server Host (Single source of truth)
+  CONTROL_HOST: "192.168.10.252"
+  
+  # Redis Broker Configuration
+  REDIS_HOST: "192.168.10.252"
+  REDIS_PORT: "23437"
+  REDIS_DB: "0"
+  REDIS_URL: "redis://192.168.10.252:23437/0"
+  
+  # MinIO / S3 Object Storage Configuration
+  MINIO_HOST: "192.168.10.252"
+  MINIO_PORT: "9000"
+  MINIO_SECURE: "false"
+  MINIO_BUCKET_NAME: "train-service"
+  
+  # MLflow Tracking Server Configuration
+  MLFLOW_PORT: "5000"
+  MLFLOW_TRACKING_URI: "http://192.168.10.252:5000"
+  
+  # CIFS / Samba Shared Storage Mount
+  CIFS_SERVER: "192.168.10.252"
+  CIFS_SHARE_NAME: "wyolo"
+  CIFS_SHARE_PATH: "//192.168.10.252/wyolo"
+  
+  # Execution Defaults
+  EXECUTOR_TIMEOUT_SECONDS: "43200"
+  EXECUTOR_IMAGE: "wisrovi/train_service:worker_executor_v1.0.0"
+  DEFAULT_RESULTS_DIR: "/wyolo/worker/train_service_results"
