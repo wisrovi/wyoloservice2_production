@@ -1,8 +1,8 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: wyolo-workers
+  name: wtrain-service
   labels:
-    app.kubernetes.io/name: wyolo-workers
+    app.kubernetes.io/name: wtrain-service
     app.kubernetes.io/part-of: train-service2
     app.kubernetes.io/component: gpu-compute-nodes
