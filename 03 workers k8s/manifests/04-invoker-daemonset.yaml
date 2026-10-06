@@ -17,13 +17,68 @@ spec:
         app: wyolo-invoker
     spec:
       serviceAccountName: wyolo-invoker-sa
-      # Optional: Restrict to GPU-enabled nodes if labeled in cluster:
-      # nodeSelector:
-      #   nvidia.com/gpu.present: "true"
+      nodeSelector:
+        nvidia.com/gpu.present: "true"
       tolerations:
         - key: "nvidia.com/gpu"
           operator: "Exists"
           effect: "NoSchedule"
+      initContainers:
+        - name: hardware-detector
+          image: nvidia/cuda:12.2.0-base-ubuntu22.04
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+          env:
+            - name: WORKER_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: WORKER_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          command:
+            - "bash"
+            - "-c"
+            - |
+              mkdir -p /app/config
+              USER_ENV="/app/config/user.env"
+              echo "USER=wisrovi" > "$USER_ENV"
+              echo "TZ=Europe/Madrid" >> "$USER_ENV"
+              echo "WORKER_HOST=${WORKER_HOST}" >> "$USER_ENV"
+              echo "WORKER_HOSTNAME=${WORKER_HOSTNAME}" >> "$USER_ENV"
+              echo "WORKER_OS=$(uname -s)" >> "$USER_ENV"
+              echo "WORKER_KERNEL_VERSION=$(uname -r)" >> "$USER_ENV"
+              echo "WORKER_CPU_CORES=$(nproc)" >> "$USER_ENV"
+              echo "WORKER_GATEWAY=$(ip route | grep default | awk '{print $3}' | head -n 1)" >> "$USER_ENV"
+              echo "WORKER_NETWORK_INTERFACE=$(ip route | grep default | awk '{print $5}' | head -n 1)" >> "$USER_ENV"
+              echo "WORKER_APP_ENV=production" >> "$USER_ENV"
+              echo "WORKER_CURRENT_DATE=$(date '+%Y-%m-%d')" >> "$USER_ENV"
+              echo "WORKER_CURRENT_TIME=$(date '+%H:%M:%S')" >> "$USER_ENV"
+
+              if command -v nvidia-smi &> /dev/null; then
+                  echo "WORKER_GPU_COUNT=$(nvidia-smi --query-gpu=count --format=csv,noheader | head -n 1)" >> "$USER_ENV"
+                  echo "WORKER_GPU_MODEL=$(nvidia-smi --query-gpu=name --format=csv,noheader | head -n 1)" >> "$USER_ENV"
+                  echo "WORKER_GPU_MEMORY=$(nvidia-smi --query-gpu=memory.total --format=csv,noheader | head -n 1)" >> "$USER_ENV"
+              else
+                  echo "WORKER_GPU_COUNT=0" >> "$USER_ENV"
+                  echo "WORKER_GPU_MODEL=none" >> "$USER_ENV"
+                  echo "WORKER_GPU_MEMORY=0" >> "$USER_ENV"
+              fi
+
+              MEM_TOTAL=$(awk '/^MemTotal:/ {print $2}' /proc/meminfo)
+              echo "WORKER_RAM_MEMORY=$((MEM_TOTAL * 8 / 10 / 1048576))g" >> "$USER_ENV"
+              echo "WORKER_CPU_CORES_AVAILABLE=$(( $(nproc) - 1 )).0" >> "$USER_ENV"
+              echo "PRIVATE_QUEUE=${WORKER_HOST}" >> "$USER_ENV"
+              echo "=== [INIT] Generated /app/config/user.env successfully: ==="
+              cat "$USER_ENV"
+          volumeMounts:
+            - name: app-config-dir
+              mountPath: /app/config
       containers:
         - name: invoker
           image: wisrovi/train_service:worker_invoker_v1.0.0
@@ -66,8 +121,22 @@ spec:
             limits:
               cpu: "2"
               memory: "4Gi"
-          # 4. Shared Local Host Volumes (High Performance Local NVMe/SSD)
+          # 4. Startup Command Sourcing Generated user.env and Launching Celery
+          command:
+            - "bash"
+            - "-c"
+            - |
+              if [ -f /app/config/user.env ]; then
+                set -a
+                source /app/config/user.env
+                set +a
+              fi
+              echo "=== Starting Invoker Celery Worker on Queue: ${WORKER_HOST},gpus_high,gpus_medium,gpus_low ==="
+              exec celery -A worker_gpu worker -E -Q ${WORKER_HOST},gpus_high,gpus_medium,gpus_low --loglevel=info --concurrency=1 --prefetch-multiplier=1 -Ofair --max-tasks-per-child=1
+          # 5. Shared Local Host Volumes (High Performance Local NVMe/SSD)
           volumeMounts:
+            - name: app-config-dir
+              mountPath: /app/config
             - name: host-train-results
               mountPath: /home/wyolo/train_service_results
             - name: host-request
@@ -77,6 +146,8 @@ spec:
             - name: docker-socket
               mountPath: /var/run/docker.sock
       volumes:
+        - name: app-config-dir
+          emptyDir: {}
         - name: host-train-results
           hostPath:
             path: /opt/wyolo/train_service_results
