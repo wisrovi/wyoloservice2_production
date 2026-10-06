@@ -1,0 +1,81 @@
+# -------------------------------------------------------------
+# RBAC for Worker Invoker (Scoped to wyolo-workers namespace)
+# -------------------------------------------------------------
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: wyolo-invoker-sa
+  namespace: wyolo-workers
+  labels:
+    app.kubernetes.io/name: wyolo-invoker
+    app.kubernetes.io/part-of: train-service2
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: wyolo-invoker-role
+  namespace: wyolo-workers
+rules:
+  # Pod management for ephemeral YOLO executors
+  - apiGroups: [""]
+    resources: ["pods", "pods/log", "pods/status"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  # Job management (alternative orchestration pattern)
+  - apiGroups: ["batch"]
+    resources: ["jobs", "jobs/status"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  # Config access
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: wyolo-invoker-rolebinding
+  namespace: wyolo-workers
+subjects:
+  - kind: ServiceAccount
+    name: wyolo-invoker-sa
+    namespace: wyolo-workers
+roleRef:
+  kind: Role
+  name: wyolo-invoker-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# -------------------------------------------------------------
+# RBAC for Dozzle Log Viewer (Read-only for streaming logs)
+# -------------------------------------------------------------
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dozzle-sa
+  namespace: wyolo-workers
+  labels:
+    app.kubernetes.io/name: dozzle-log-viewer
+    app.kubernetes.io/part-of: train-service2
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: dozzle-log-viewer-clusterrole
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/log"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: dozzle-log-viewer-binding
+subjects:
+  - kind: ServiceAccount
+    name: dozzle-sa
+    namespace: wyolo-workers
+roleRef:
+  kind: ClusterRole
+  name: dozzle-log-viewer-clusterrole
+  apiGroup: rbac.authorization.k8s.io
