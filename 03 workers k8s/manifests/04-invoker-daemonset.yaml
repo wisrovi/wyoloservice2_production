@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: wyolo-invoker
+  namespace: wyolo-workers
+  labels:
+    app.kubernetes.io/name: wyolo-invoker
+    app.kubernetes.io/part-of: train-service2
+    app.kubernetes.io/component: task-invoker
+spec:
+  selector:
+    matchLabels:
+      app: wyolo-invoker
+  template:
+    metadata:
+      labels:
+        app: wyolo-invoker
+    spec:
+      serviceAccountName: wyolo-invoker-sa
+      # Optional: Restrict to GPU-enabled nodes if labeled in cluster:
+      # nodeSelector:
+      #   nvidia.com/gpu.present: "true"
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Exists"
+          effect: "NoSchedule"
+      containers:
+        - name: invoker
+          image: wisrovi/train_service:worker_invoker_v1.0.0
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          # 1. Global Cluster Environment Variables
+          envFrom:
+            - configMapRef:
+                name: train-service-global-config
+            - secretRef:
+                name: train-service-secrets
+          # 2. Dynamic Node-Specific Identity (Injected by K8s Downward API)
+          env:
+            - name: WORKER_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: WORKER_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: PRIVATE_QUEUE
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: K8S_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: K8S_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          # 3. CPU and RAM Limits for the Invoker Orchestrator
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "2"
+              memory: "4Gi"
+          # 4. Shared Local Host Volumes (High Performance Local NVMe/SSD)
+          volumeMounts:
+            - name: host-train-results
+              mountPath: /home/wyolo/train_service_results
+            - name: host-request
+              mountPath: /home/wyolo/request
+            - name: host-events
+              mountPath: /home/wyolo/events
+            - name: docker-socket
+              mountPath: /var/run/docker.sock
+      volumes:
+        - name: host-train-results
+          hostPath:
+            path: /opt/wyolo/train_service_results
+            type: DirectoryOrCreate
+        - name: host-request
+          hostPath:
+            path: /opt/wyolo/request
+            type: DirectoryOrCreate
+        - name: host-events
+          hostPath:
+            path: /opt/wyolo/events
+            type: DirectoryOrCreate
+        - name: docker-socket
+          hostPath:
+            path: /var/run/docker.sock
+            type: Socket
