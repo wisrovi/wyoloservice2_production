@@ -45,7 +45,7 @@ else
 fi
 
 # 3. Apply Namespace
-echo "[1/6] Applying namespace (wyolo-workers)..."
+echo "[1/6] Applying namespace (wtrain-service)..."
 kubectl apply -f "${MANIFESTS_DIR}/00-namespace.yaml"
 
 # 4. Apply RBAC (ServiceAccounts, Roles, RoleBindings)
@@ -55,7 +55,7 @@ kubectl apply -f "${MANIFESTS_DIR}/01-rbac.yaml"
 # 5. Create or Update Global ConfigMap dynamically from ENV
 echo "[3/6] Applying global ConfigMap (train-service-global-config)..."
 kubectl create configmap train-service-global-config \
-    --namespace wyolo-workers \
+    --namespace wtrain-service \
     --from-literal=CONTROL_HOST="${CONTROL_HOST}" \
     --from-literal=REDIS_HOST="${CONTROL_HOST}" \
     --from-literal=REDIS_PORT="${REDIS_PORT:-23437}" \
@@ -81,7 +81,7 @@ kubectl create configmap train-service-global-config \
 # 6. Create or Update Secrets dynamically from ENV
 echo "[4/6] Applying Secrets (train-service-secrets)..."
 kubectl create secret generic train-service-secrets \
-    --namespace wyolo-workers \
+    --namespace wtrain-service \
     --from-literal=CIFS_USER="${CIFS_USER:-wyolo}" \
     --from-literal=CIFS_PASS="${CIFS_PASS:-wyolo}" \
     --from-literal=MINIO_ROOT_USER="${MINIO_ROOT_USER:-wyolo}" \
@@ -102,8 +102,8 @@ echo ""
 echo "=================================================================="
 echo "  [SUCCESS] Deployment complete!"
 echo "=================================================================="
-echo "Status of DaemonSets in 'wyolo-workers':"
-kubectl get daemonsets -n wyolo-workers -o wide
+echo "Status of DaemonSets in 'wtrain-service':"
+kubectl get daemonsets -n wtrain-service -o wide
 echo ""
 echo "Accessing Real-Time Logs via Dozzle:"
 echo "  👉 Open your browser on any worker node: http://localhost:${DOZZLE_HOST_PORT:-8888}"
