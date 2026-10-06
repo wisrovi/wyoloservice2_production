@@ -3,7 +3,7 @@
 # ==============================================================================
 
 SHELL := /bin/bash
-NAMESPACE := wtrain-service
+NAMESPACE := train-service
 
 .PHONY: all deploy status test-gpu logs-invoker logs-dozzle uninstall clean help
 
