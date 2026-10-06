@@ -45,12 +45,6 @@ spec:
               value: "info"
             - name: DOZZLE_ENABLE_ACTIONS
               value: "true"
-            - name: MY_NODE_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: spec.nodeName
-            - name: DOZZLE_FILTER
-              value: "node=$(MY_NODE_NAME)"
           resources:
             requests:
               cpu: "50m"
