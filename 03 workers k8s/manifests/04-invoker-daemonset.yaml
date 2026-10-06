@@ -162,15 +162,15 @@ spec:
           emptyDir: {}
         - name: host-train-results
           hostPath:
-            path: /opt/wyolo/train_service_results
+            path: /home/wyolo/train_service_results
             type: DirectoryOrCreate
         - name: host-request
           hostPath:
-            path: /opt/wyolo/request
+            path: /home/wyolo/request
             type: DirectoryOrCreate
         - name: host-events
           hostPath:
-            path: /opt/wyolo/events
+            path: /home/wyolo/events
             type: DirectoryOrCreate
         - name: docker-socket
           hostPath:
