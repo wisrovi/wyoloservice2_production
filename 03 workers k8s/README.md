@@ -112,7 +112,7 @@ Users who previously used Portainer to inspect training logs now have an even si
 ├── test_gpu_node.yaml           # Smoke test pod verifying NVIDIA GPU access inside K8s
 ├── uninstall.sh                 # Safe teardown script
 └── manifests/
-    ├── 00-namespace.yaml        # Dedicated 'wyolo-workers' namespace
+    ├── 00-namespace.yaml        # Dedicated 'wtrain-service' namespace
     ├── 01-rbac.yaml             # ServiceAccounts, Roles, and RoleBindings
     ├── 02-configmap.yaml        # Global cluster ConfigMap (Redis, MinIO, MLflow)
     ├── 03-secrets.template.yaml # Secrets template for CIFS and MinIO authentication
