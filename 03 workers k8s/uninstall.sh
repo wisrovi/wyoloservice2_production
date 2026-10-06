@@ -17,16 +17,16 @@ if ! command -v kubectl &> /dev/null; then
 fi
 
 echo "[1/4] Deleting DaemonSets (Invoker & Dozzle)..."
-kubectl delete daemonset wyolo-invoker wyolo-dozzle -n wyolo-workers --ignore-not-found=true
+kubectl delete daemonset wyolo-invoker wyolo-dozzle -n wtrain-service --ignore-not-found=true
 
 echo "[2/4] Deleting ConfigMaps and Secrets..."
-kubectl delete configmap train-service-global-config -n wyolo-workers --ignore-not-found=true
-kubectl delete secret train-service-secrets -n wyolo-workers --ignore-not-found=true
+kubectl delete configmap train-service-global-config -n wtrain-service --ignore-not-found=true
+kubectl delete secret train-service-secrets -n wtrain-service --ignore-not-found=true
 
 echo "[3/4] Deleting RBAC (Roles, Bindings, ServiceAccounts)..."
 kubectl delete -f "${MANIFESTS_DIR}/01-rbac.yaml" --ignore-not-found=true
 
-echo "[4/4] Deleting Namespace (wyolo-workers)..."
+echo "[4/4] Deleting Namespace (wtrain-service)..."
 kubectl delete -f "${MANIFESTS_DIR}/00-namespace.yaml" --ignore-not-found=true
 
 echo ""
