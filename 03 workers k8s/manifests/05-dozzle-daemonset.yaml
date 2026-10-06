@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: wyolo-dozzle
-  namespace: wyolo-workers
+  namespace: wtrain-service
   labels:
     app.kubernetes.io/name: dozzle-log-viewer
     app.kubernetes.io/part-of: train-service2
@@ -36,9 +36,9 @@ spec:
               value: "k8s"
             - name: DOZZLE_LEVEL
               value: "info"
-            # Optional: restrict view to wyolo-workers namespace or keep cluster-wide
+            # Optional: restrict view to wtrain-service namespace or keep cluster-wide
             - name: DOZZLE_FILTER
-              value: "namespace=wyolo-workers"
+              value: "namespace=wtrain-service"
           resources:
             requests:
               cpu: "50m"
