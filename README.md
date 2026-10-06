@@ -72,6 +72,7 @@ The project is built upon a robust, high-performance infrastructure:
 *   **Artifacts Storage:** MinIO (S3-Compatible on port `23448`)
 *   **Experiment Tracking:** MLflow (port `23435`)
 *   **Deployment & Resilience:** Docker Compose, Systemd (Watchdog services), Watchtower (auto-updates)
+*   **Kubernetes Orchestration:** Kubernetes DaemonSets (Invoker & Dozzle), Downward API dynamic node IP injection, Ephemeral GPU Jobs/Pods, and Dozzle real-time log streaming UI.
 
 ---
 
@@ -669,16 +670,22 @@ The directory layout of `wyoloservice2_production` is structured as follows:
 
 ```
 wyoloservice2_production/
-├── control_server/              # Master Node Infrastructure
+├── 01 control_server/           # Master Node Infrastructure
 │   ├── docker-compose.api.yml   # Gateway API (FastAPI) compose file
 │   ├── docker-compose.env.yml   # Core Datastore (Postgres, Redis, MinIO, MLflow)
 │   ├── docker-compose.manager.yml # Optuna Sweeper Manager Celery worker
 │   ├── control_host.env         # Master variables environment template
 │   └── Makefile                 # Master stack startup automation commands
-├── workers/                     # GPU Compute Node Scripts
+├── 02 workers/                  # GPU Compute Node Scripts (Docker / Systemd)
 │   ├── download.sh              # 1-click Worker package downloader
 │   ├── install.sh               # Watchdog systemd & Watchtower setup script
 │   └── micro_train.sh           # Ephemeral docker image validation check
+├── 03 workers k8s/              # Kubernetes GPU Compute Node Stack
+│   ├── manifests/               # DaemonSets (Invoker, Dozzle), RBAC, ConfigMaps
+│   ├── deploy.sh                # 1-click Kubernetes deployment script
+│   ├── Makefile                 # K8s operational management commands
+│   ├── test_gpu_node.yaml       # GPU smoke test verification pod
+│   └── README.md                # Comprehensive K8s architecture guide
 └── docs/                        # Sphinx documentation builds
 ```
 
