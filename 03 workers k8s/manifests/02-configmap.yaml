@@ -31,6 +31,11 @@ data:
   CIFS_SHARE_NAME: "wyolo"
   CIFS_SHARE_PATH: "//192.168.10.252/wyolo"
   
+  # Worker Configuration & Limits
+  NUM_CURRENT_TRAIN: "1"
+  MAX_GPU: "30"
+  WORKER_NAME: "worker_wisrovi"
+  
   # Execution Defaults
   EXECUTOR_TIMEOUT_SECONDS: "43200"
   EXECUTOR_IMAGE: "wisrovi/train_service:worker_executor_v1.0.0"
