@@ -17,6 +17,8 @@ spec:
         app: wyolo-dozzle
     spec:
       serviceAccountName: dozzle-sa
+      nodeSelector:
+        nvidia.com/gpu.present: "true"
       tolerations:
         - key: "nvidia.com/gpu"
           operator: "Exists"
@@ -30,6 +32,8 @@ spec:
               containerPort: 8080
               hostPort: 8888  # Directly accessible at http://localhost:8888 on each node
           env:
+            - name: DOZZLE_MODE
+              value: "k8s"
             - name: DOZZLE_LEVEL
               value: "info"
             # Optional: restrict view to wyolo-workers namespace or keep cluster-wide
