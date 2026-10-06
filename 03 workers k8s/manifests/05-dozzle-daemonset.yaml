@@ -16,6 +16,7 @@ spec:
       labels:
         app: wyolo-dozzle
     spec:
+      priorityClassName: system-node-critical
       serviceAccountName: dozzle-sa
       nodeSelector:
         nvidia.com/gpu.present: "true"
@@ -23,6 +24,10 @@ spec:
         - key: "nvidia.com/gpu"
           operator: "Exists"
           effect: "NoSchedule"
+        - key: "node.kubernetes.io/disk-pressure"
+          operator: "Exists"
+        - key: "node.kubernetes.io/memory-pressure"
+          operator: "Exists"
       containers:
         - name: dozzle
           image: amir20/dozzle:latest
