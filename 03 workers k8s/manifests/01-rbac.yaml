@@ -1,11 +1,11 @@
 # -------------------------------------------------------------
-# RBAC for Worker Invoker (Scoped to wtrain-service namespace)
+# RBAC for Worker Invoker (Scoped to train-service namespace)
 # -------------------------------------------------------------
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: wyolo-invoker-sa
-  namespace: wtrain-service
+  namespace: train-service
   labels:
     app.kubernetes.io/name: wyolo-invoker
     app.kubernetes.io/part-of: train-service2
@@ -14,7 +14,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: wyolo-invoker-role
-  namespace: wtrain-service
+  namespace: train-service
 rules:
   # Pod management for ephemeral YOLO executors
   - apiGroups: [""]
@@ -33,11 +33,11 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: wyolo-invoker-rolebinding
-  namespace: wtrain-service
+  namespace: train-service
 subjects:
   - kind: ServiceAccount
     name: wyolo-invoker-sa
-    namespace: wtrain-service
+    namespace: train-service
 roleRef:
   kind: Role
   name: wyolo-invoker-role
@@ -50,7 +50,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: dozzle-sa
-  namespace: wtrain-service
+  namespace: train-service
   labels:
     app.kubernetes.io/name: dozzle-log-viewer
     app.kubernetes.io/part-of: train-service2
@@ -80,7 +80,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: dozzle-sa
-    namespace: wtrain-service
+    namespace: train-service
 roleRef:
   kind: ClusterRole
   name: dozzle-log-viewer-clusterrole
