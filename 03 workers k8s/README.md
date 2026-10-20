@@ -106,6 +106,15 @@ Users inspecting training logs have a clean, node-isolated experience:
 
 ---
 
+## 🛡️ Rollout Strategy & Graceful Shutdown Policy
+
+The `wyolo-invoker` DaemonSet employs a zero-downtime, non-destructive rollout strategy tailored for long-running GPU training jobs:
+
+- **Sequential Rolling Updates (`maxUnavailable: 1`):** DaemonSet updates are processed strictly node-by-node. Under no circumstances will all cluster invokers be recycled simultaneously, protecting concurrent trials running across the GPU farm.
+- **Graceful Termination Window (`terminationGracePeriodSeconds: 300`):** Concedes up to 5 minutes for active Celery tasks and child Executor containers to flush results or checkpoint safely before a SIGKILL is dispatched.
+
+---
+
 ## 📁 Directory Structure
 
 ```
