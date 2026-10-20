@@ -11,7 +11,7 @@ spec:
   updateStrategy:
     type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: "100%"
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: wyolo-invoker
@@ -21,6 +21,7 @@ spec:
         app: wyolo-invoker
     spec:
       priorityClassName: system-node-critical
+      terminationGracePeriodSeconds: 300
       serviceAccountName: wyolo-invoker-sa
       nodeSelector:
         nvidia.com/gpu.present: "true"
