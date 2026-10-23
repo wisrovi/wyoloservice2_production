@@ -21,7 +21,7 @@ services:
 
 
   api:
-    image: wisrovi/train_service:api_server_v1.1.0
+    image: wisrovi/train_service:api_server_v1.2.0
     build:
       context: ../../../NeuralForgeAI/api
     container_name: control_server-fastapi-1
