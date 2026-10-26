@@ -298,7 +298,7 @@ Download the validation script and run the respective test commands:
 
 ```bash
 # Download and prepare the micro train script
-wget https://raw.githubusercontent.com/wisrovi/wyoloservice2_production/refs/heads/main/workers/micro_train.sh
+wget https://raw.githubusercontent.com/wisrovi/wyoloservice2_production/refs/heads/main/02%20workers/micro_train.sh
 chmod +x micro_train.sh
 
 # Test 1: Color Ball Image Classification
