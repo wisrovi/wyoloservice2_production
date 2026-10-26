@@ -1,7 +1,6 @@
 # ---------------------------------------------------------------------------
-# Debug / Infrastructure
+# Base model / framework type
 # ---------------------------------------------------------------------------
-debug: "192.168.1.84"
 type: "yolo"
 
 # ---------------------------------------------------------------------------
@@ -30,6 +29,9 @@ sweeper:
 
   fitness: "metrics/accuracy_top1"
   study_name: "color_ball_v3"
+
+  # Direct routing to a specific worker node IP (or true for "gpus_debug", or false/omit for standard queue):
+  debug: "192.168.1.84"
 
   tune: true
   n_trials: 3
