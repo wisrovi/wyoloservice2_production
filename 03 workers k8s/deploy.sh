@@ -73,7 +73,7 @@ kubectl create configmap train-service-global-config \
     --from-literal=NUM_CURRENT_TRAIN="${NUM_CURRENT_TRAIN:-1}" \
     --from-literal=MAX_GPU="${MAX_GPU:-30}" \
     --from-literal=WORKER_NAME="${WORKER_NAME:-worker_wisrovi}" \
-    --from-literal=EXECUTOR_TIMEOUT_SECONDS="43200" \
+    --from-literal=EXECUTOR_TIMEOUT_SECONDS="56160" \
     --from-literal=EXECUTOR_IMAGE="${EXECUTOR_IMAGE:-wisrovi/train_service:worker_executor_v1.0.0}" \
     --from-literal=DEFAULT_RESULTS_DIR="/wyolo/worker/train_service_results" \
     --dry-run=client -o yaml | kubectl apply -f -
