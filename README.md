@@ -13,8 +13,8 @@
 
 | Metadata | Details |
 | :--- | :--- |
-| **Document Version** | `2.2.5` (Active Release) |
-| **Last Reviewed** | `2026-10-06` |
+| **Document Version** | `2.2.6` (Active Release) |
+| **Last Reviewed** | `2026-10-26` |
 | **Target Audience** | Machine Learning Engineers, MLOps Architects, DevOps Admins |
 | **Cluster Scope** | Distributed GPU Training, Genetic Sweeps & Optuna Orchestration |
 | **Primary Maintainer** | William Steve Rodriguez Villamizar (wisrovi) |
@@ -231,10 +231,19 @@ When the Celery Manager generates a trial mutation, it routes the execution payl
 * **`priority: medium`:** Routed to the `gpus_medium` queue. Consumed when the high-priority queue is empty.
 * **`priority: low`:** Routed to the `gpus_low` queue. Ideal for background or overnight sweeps (e.g. Smoke Tests run on `low`).
 
-### 3. Worker Concurrency Settings
+### 3. Node-Targeted & Debug Task Routing (`sweeper.debug`)
+The Celery Study Manager parses the `debug` setting inside the `sweeper` block (`sweeper.debug`):
+* **Direct Worker IP Routing (`sweeper.debug: "<WORKER_IP>"`):** When configured with a specific IP (e.g., `debug: "192.168.1.68"`), Celery bypasses generic priority pools and routes the task directly to the dedicated queue for that physical machine (`queue: "<WORKER_IP>"`). This guarantees that the trial executes on that exact GPU node.
+* **Global Debug Queue (`sweeper.debug: true`):** When set to boolean `true`, tasks route to the `gpus_debug` queue, consumed only by workers specifically configured to process debug jobs.
+* **Standard Priority Queuing (`sweeper.debug: false` or omitted):** Tasks route to standard priority queues based on `sweeper.priority` (`gpus_high`, `gpus_medium`, `gpus_low`).
+
+> [!WARNING]
+> **YAML Structure Requirement:** The `debug` parameter MUST be nested inside the `sweeper:` dictionary (`sweeper.debug`), NOT at the root level of the YAML. If placed at the root, the Manager's orchestrator ignores it and routes the job to the default `gpus_low` queue.
+
+### 4. Worker Concurrency Settings
 Worker-invoker nodes pull tasks using a concurrency cap to prevent out-of-memory errors on shared GPUs. Each worker daemon is configured by default with `--concurrency=1` to ensure strict single-GPU allocation per trial, though this can be scaled up on multi-GPU machines.
 
-### 4. Optuna Study Lifecycle State Machine
+### 5. Optuna Study Lifecycle State Machine
 Below is the status transition logic during the lifecycle of an optimization sweep:
 
 ```mermaid
@@ -445,9 +454,11 @@ sweeper:
   direction: maximize       # Optimize direction for target metric
   study_name: "example_experiment"
   fitness: "metrics/mAP50"  # Target metric to optimize
-  tune: false                # Not Enable parameter tuning search
+  tune: false               # Enable parameter tuning search
   sampler: "TPESampler"
   n_trials: 10              # Number of trials (mutations)
+  priority: "low"           # Priority: "high", "medium", "low"
+  debug: false              # Direct to node IP (e.g. "192.168.1.68"), true ("gpus_debug"), or false (standard queue)
   search_space:
     train:
       lr0: [ "loguniform", 1e-5, 1e-2 ]
@@ -551,6 +562,34 @@ When building your search space, you can customize and optimize these core train
 *   **`mosaic`** (Float, default `1.0`): 4-image mosaic composition probability.
 *   **`mixup`** (Float, default `0.0`): Mixup image composition overlay probability.
 *   **`copy_paste`** (Float, default `0.0`): Segment instance copy-paste probability (only for instance segmentation).
+
+### 6. Debug Mode & Direct Node Targeting (`sweeper.debug`)
+
+To bypass the general priority worker queues and target a specific worker node or debug queue during testing or diagnosis, define `debug` inside the `sweeper:` block:
+
+```yaml
+sweeper:
+  version: 1
+  algorithm: optuna
+  study_name: "debug_node_test"
+  fitness: "metrics/accuracy_top1"
+  priority: "high"
+  
+  # Target a specific worker node by physical IP:
+  debug: "192.168.1.68"
+  
+  # Or send to the shared debug queue:
+  # debug: true
+```
+
+| Value of `sweeper.debug` | Destination Celery Queue | Operational Behavior |
+| :--- | :--- | :--- |
+| `"192.168.1.XX"` (String IP) | `<WORKER_IP>` | Directs trial tasks **exclusively** to the worker node matching this IP address. |
+| `true` (Boolean) | `gpus_debug` | Directs tasks to the dedicated `gpus_debug` queue, handled only by nodes configured for debug workloads. |
+| `false` / omitted | `gpus_{priority}` | Automatically load-balanced across the cluster in `gpus_high`, `gpus_medium`, or `gpus_low`. |
+
+> [!CAUTION]
+> **Correct Nesting Location:** Always place `debug:` inside `sweeper:`. Placing `debug:` at the YAML root level will be ignored by the manager's task scheduler, falling back to standard priority routing.
 
 ---
 
