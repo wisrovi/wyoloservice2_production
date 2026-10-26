@@ -106,12 +106,13 @@ Users inspecting training logs have a clean, node-isolated experience:
 
 ---
 
-## 🛡️ Rollout Strategy & Graceful Shutdown Policy
+## 🛡️ Rollout Strategy, Graceful Shutdown & Timeout Cascade (`1.0x` / `1.3x` / `2.0x`)
 
 The `wyolo-invoker` DaemonSet employs a zero-downtime, non-destructive rollout strategy tailored for long-running GPU training jobs:
 
 - **Sequential Rolling Updates (`maxUnavailable: 1`):** DaemonSet updates are processed strictly node-by-node. Under no circumstances will all cluster invokers be recycled simultaneously, protecting concurrent trials running across the GPU farm.
 - **Graceful Termination Window (`terminationGracePeriodSeconds: 300`):** Concedes up to 5 minutes for active Celery tasks and child Executor containers to flush results or checkpoint safely before a SIGKILL is dispatched.
+- **Cascading Infrastructure Timeouts (`EXECUTOR_TIMEOUT_SECONDS: "56160"`):** By default (when `train.time` is omitted from the YAML), the Invoker and Executor Pod `spec.activeDeadlineSeconds` use a `1.3x` watchdog over the 12h base (`56,160s` / `15.6h`), while Ultralytics trains strictly by `epochs`. When `train.time` (in hours) is defined by the user, Ultralytics trains for `1.0x`, the Invoker + K8s `activeDeadlineSeconds` wait `1.3x` (`max(+30%, +45 min)`), and Redis locks/metadata persist for `2.0x` (minimum `24h`).
 
 ---
 
