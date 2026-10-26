@@ -37,6 +37,6 @@ data:
   WORKER_NAME: "worker_wisrovi"
   
   # Execution Defaults
-  EXECUTOR_TIMEOUT_SECONDS: "43200"
+  EXECUTOR_TIMEOUT_SECONDS: "56160"
   EXECUTOR_IMAGE: "wisrovi/train_service:worker_executor_v1.0.0"
   DEFAULT_RESULTS_DIR: "/wyolo/worker/train_service_results"
