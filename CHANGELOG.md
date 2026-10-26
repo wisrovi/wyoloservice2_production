@@ -1,5 +1,15 @@
 # Changelog - WDarwin Ops Production
 
+## [2.2.6] - 2026-10-26
+### Added
+- Documented `sweeper.debug` configuration parameter for direct worker IP node targeting (`debug: "<WORKER_IP>"`) and shared debug queue routing (`debug: true`) in `README.md`.
+- Clarified that `debug` must be nested under the `sweeper:` dictionary, not at the root YAML level.
+- Updated `test/config_train.yaml` template with correct `sweeper.debug` placement.
+
+## [2.2.5] - 2026-10-06
+### Added
+- Production Kubernetes GPU Worker daemonset deployment guides and timeout cascades.
+
 ## [2.2.4] - 2026-08-06
 ### Changed
 - Remapped the `gradio_invoker` service host port from `7860` to `23430` (`23430:7860`) to avoid conflicts with other host-bound Gradio instances.
