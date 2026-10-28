@@ -1,5 +1,10 @@
 # Changelog - WDarwin Ops Production
 
+## [2.2.7] - 2026-10-28
+### Changed
+- Updated API service image tag to `wisrovi/train_service:api_server_v1.2.1` in `01 control_server/api/docker-compose.yaml` (supports private mode queue override and scheduled training via `start_at`).
+- Updated Manager service image tag to `wisrovi/train_service:manager_orchestrator_v1.2.1` in `01 control_server/manager/docker-compose.manager.yml` (supports multi-source target queue resolution: `sweeper.debug`, root `debug`, `target_worker_queue`).
+
 ## [2.2.6] - 2026-10-26
 ### Added
 - Documented `sweeper.debug` configuration parameter for direct worker IP node targeting (`debug: "<WORKER_IP>"`) and shared debug queue routing (`debug: true`) in `README.md`.
