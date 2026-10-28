@@ -13,7 +13,7 @@
 
 | Metadata | Details |
 | :--- | :--- |
-| **Document Version** | `2.2.6` (Active Release) |
+| **Document Version** | `2.2.7` (Active Release) |
 | **Last Reviewed** | `2026-10-26` |
 | **Target Audience** | Machine Learning Engineers, MLOps Architects, DevOps Admins |
 | **Cluster Scope** | Distributed GPU Training, Genetic Sweeps & Optuna Orchestration |
