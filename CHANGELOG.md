@@ -1,5 +1,11 @@
 # Changelog - WDarwin Ops Production
 
+## [2.2.10] - 2026-10-29
+### Fixed
+- **Global Cluster Celery Queue (`wyolo_gpu_queue`) Consumer in Invoker DaemonSet:**
+  - Added `wyolo_gpu_queue` to the startup Celery command `-Q` argument in `03 workers k8s/manifests/04-invoker-daemonset.yaml`.
+  - Ensures all GPU worker nodes consume tasks from the global public queue in parallel upon startup, eliminating single-worker bottlenecks.
+
 ## [2.2.9] - 2026-10-29
 ### Added
 - **Host Physical RAM and SWAP Total Export in Invoker DaemonSet:**
