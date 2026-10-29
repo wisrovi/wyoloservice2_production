@@ -81,8 +81,14 @@ spec:
               fi
 
               MEM_TOTAL_KB=$(awk '/^MemTotal:/ {print $2}' /proc/meminfo)
-              MEM_TOTAL_GB=$(( MEM_TOTAL_KB / 1048576 ))
-              # Limit training RAM to max 60% of total host RAM (reserving >= 40% for developer desktop)
+              MEM_TOTAL_GB=$(( (MEM_TOTAL_KB + 524288) / 1048576 ))
+              SWAP_TOTAL_KB=$(awk '/^SwapTotal:/ {print $2}' /proc/meminfo)
+              SWAP_TOTAL_GB=$(( (SWAP_TOTAL_KB + 524288) / 1048576 ))
+
+              echo "WORKER_PHYSICAL_RAM_TOTAL=\"${MEM_TOTAL_GB}g\"" >> "$USER_ENV"
+              echo "WORKER_SWAP_TOTAL=\"${SWAP_TOTAL_GB}g\"" >> "$USER_ENV"
+
+              # Default safe baseline: limit training RAM to max 60% of total host RAM (reserving >= 40% for developer desktop)
               SAFE_RAM_GB=$(( MEM_TOTAL_GB * 6 / 10 ))
               if [ "$SAFE_RAM_GB" -lt 4 ]; then
                   SAFE_RAM_GB=4
