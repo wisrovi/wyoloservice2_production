@@ -1,5 +1,13 @@
 # Changelog - WDarwin Ops Production
 
+## [2.2.8] - 2026-10-28
+### Fixed
+- **Worker Node Resource Guard & Freeze Prevention in DaemonSet:**
+  - Updated `03 workers k8s/manifests/04-invoker-daemonset.yaml` hardware detector initContainer:
+    * Removed unnecessary `resources.limits.nvidia.com/gpu: 1` from `hardware-detector` initContainer so it does not block scheduling or lock GPU devices.
+    * Changed `WORKER_RAM_MEMORY` auto-configuration from 80% to max 60% of total host RAM, reserving at least 40% (minimum 4-6GB) strictly for the developer desktop and operating system to prevent swap thrashing.
+    * Changed `WORKER_CPU_CORES_AVAILABLE` to reserve 2 to 4 cores strictly for developer desktop and interactive applications.
+
 ## [2.2.7] - 2026-10-28
 ### Changed
 - Updated API service image tag to `wisrovi/train_service:api_server_v1.2.1` in `01 control_server/api/docker-compose.yaml` (supports private mode queue override and scheduled training via `start_at`).
