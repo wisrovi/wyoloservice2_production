@@ -80,9 +80,27 @@ spec:
                   echo "WORKER_GPU_MEMORY=\"0\"" >> "$USER_ENV"
               fi
 
-              MEM_TOTAL=$(awk '/^MemTotal:/ {print $2}' /proc/meminfo)
-              echo "WORKER_RAM_MEMORY=\"$((MEM_TOTAL * 8 / 10 / 1048576))g\"" >> "$USER_ENV"
-              echo "WORKER_CPU_CORES_AVAILABLE=\"$(( $(nproc) - 1 )).0\"" >> "$USER_ENV"
+              MEM_TOTAL_KB=$(awk '/^MemTotal:/ {print $2}' /proc/meminfo)
+              MEM_TOTAL_GB=$(( MEM_TOTAL_KB / 1048576 ))
+              # Limit training RAM to max 60% of total host RAM (reserving >= 40% for developer desktop)
+              SAFE_RAM_GB=$(( MEM_TOTAL_GB * 6 / 10 ))
+              if [ "$SAFE_RAM_GB" -lt 4 ]; then
+                  SAFE_RAM_GB=4
+              fi
+              echo "WORKER_RAM_MEMORY=\"${SAFE_RAM_GB}g\"" >> "$USER_ENV"
+
+              NPROCS=$(nproc)
+              # Strictly reserve 2 to 4 cores for developer desktop OS / apps
+              if [ "$NPROCS" -le 4 ]; then
+                  AVAIL_CORES=2
+              elif [ "$NPROCS" -le 8 ]; then
+                  AVAIL_CORES=$(( NPROCS - 2 ))
+              elif [ "$NPROCS" -le 16 ]; then
+                  AVAIL_CORES=$(( NPROCS - 4 ))
+              else
+                  AVAIL_CORES=$(( NPROCS - 6 ))
+              fi
+              echo "WORKER_CPU_CORES_AVAILABLE=\"${AVAIL_CORES}.0\"" >> "$USER_ENV"
               echo "PRIVATE_QUEUE=\"${WORKER_HOST}\"" >> "$USER_ENV"
               echo "=== [INIT] Generated /app/config/user.env successfully: ==="
               cat "$USER_ENV"
