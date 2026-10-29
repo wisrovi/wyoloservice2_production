@@ -7,13 +7,13 @@
 
 # 🧠 NeuralForgeAI & WDarwin Ops - User & Production Deployment Guide
 
-![Version](https://img.shields.io/badge/version-2.2.5-blue.svg)
+![Version](https://img.shields.io/badge/version-2.2.8-blue.svg)
 ![Status](https://img.shields.io/badge/status-production-success.svg)
 ![Docker](https://img.shields.io/badge/docker-ready-2496ED.svg?logo=docker)
 
 | Metadata | Details |
 | :--- | :--- |
-| **Document Version** | `2.2.7` (Active Release) |
+| **Document Version** | `2.2.8` (Active Release) |
 | **Last Reviewed** | `2026-10-26` |
 | **Target Audience** | Machine Learning Engineers, MLOps Architects, DevOps Admins |
 | **Cluster Scope** | Distributed GPU Training, Genetic Sweeps & Optuna Orchestration |
