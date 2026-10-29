@@ -7,14 +7,14 @@
 
 # 🧠 NeuralForgeAI & WDarwin Ops - User & Production Deployment Guide
 
-![Version](https://img.shields.io/badge/version-2.2.8-blue.svg)
+![Version](https://img.shields.io/badge/version-2.2.9-blue.svg)
 ![Status](https://img.shields.io/badge/status-production-success.svg)
 ![Docker](https://img.shields.io/badge/docker-ready-2496ED.svg?logo=docker)
 
 | Metadata | Details |
 | :--- | :--- |
-| **Document Version** | `2.2.8` (Active Release) |
-| **Last Reviewed** | `2026-10-26` |
+| **Document Version** | `2.2.9` (Active Release) |
+| **Last Reviewed** | `2026-10-29` |
 | **Target Audience** | Machine Learning Engineers, MLOps Architects, DevOps Admins |
 | **Cluster Scope** | Distributed GPU Training, Genetic Sweeps & Optuna Orchestration |
 | **Primary Maintainer** | William Steve Rodriguez Villamizar (wisrovi) |
@@ -963,6 +963,8 @@ If you use this project in academic research, you are required to cite this repo
 
 
 ## Changelog
+- **v2.2.9 (2026-10-29)**: Added export of true physical RAM (`WORKER_PHYSICAL_RAM_TOTAL`) and SWAP (`WORKER_SWAP_TOTAL`) in the GPU worker invoker DaemonSet hardware detector initContainer, allowing precise node hardware capacity telemetry and unconstrained SHM allocation backed by swap.
+- **v2.2.8 (2026-10-28)**: Updated worker DaemonSet hardware detector to reserve developer desktop headroom and prevent thrashing.
 - **v2.2.5 (2026-10-06)**: Added automatic pod self-labeling in invoker DaemonSet (`node`, `hostname`, `ip`, `worker-ip`, `gpu`) and environment quoting to enable instant intuitive filtering in Dozzle UI and kubectl.
 - Bumped version due to License update to PolyForm Noncommercial and Dual Licensing model.
 
