@@ -1,5 +1,11 @@
 # Changelog - WDarwin Ops Production
 
+## [2.2.9] - 2026-10-29
+### Added
+- **Host Physical RAM and SWAP Total Export in Invoker DaemonSet:**
+  - Updated `03 workers k8s/manifests/04-invoker-daemonset.yaml` hardware detector initContainer to calculate and export `WORKER_PHYSICAL_RAM_TOTAL` and `WORKER_SWAP_TOTAL` directly into the worker environment file.
+  - Allows invokers and the cluster control interface to distinguish between true hardware capacities and default conservative safe allocations (60% RAM baseline).
+
 ## [2.2.8] - 2026-10-28
 ### Fixed
 - **Worker Node Resource Guard & Freeze Prevention in DaemonSet:**
