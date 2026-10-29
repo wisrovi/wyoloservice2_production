@@ -178,8 +178,8 @@ spec:
                   -d "{\"metadata\":{\"labels\":{\"node\":\"${WORKER_HOSTNAME}\",\"hostname\":\"${WORKER_HOSTNAME}\",\"ip\":\"${WORKER_HOST}\",\"worker-ip\":\"${WORKER_HOST}\",\"gpu\":\"${GPU_LABEL}\"},\"annotations\":{\"worker.neuralforge.ai/ip\":\"${WORKER_HOST}\",\"worker.neuralforge.ai/hostname\":\"${WORKER_HOSTNAME}\",\"worker.neuralforge.ai/gpu\":\"${WORKER_GPU_MODEL}\"}}}" \
                   https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/namespaces/${K8S_NAMESPACE}/pods/${MY_POD_NAME} || true
               fi
-              echo "=== Starting Invoker Celery Worker on Queue: ${WORKER_HOST},gpus_high,gpus_medium,gpus_low ==="
-              exec celery -A worker_gpu worker -E -Q ${WORKER_HOST},gpus_high,gpus_medium,gpus_low --loglevel=info --concurrency=1 --prefetch-multiplier=1 -Ofair --max-tasks-per-child=1
+              echo "=== Starting Invoker Celery Worker on Queue: ${WORKER_HOST},gpus_high,gpus_medium,gpus_low,wyolo_gpu_queue ==="
+              exec celery -A worker_gpu worker -E -Q ${WORKER_HOST},gpus_high,gpus_medium,gpus_low,wyolo_gpu_queue --loglevel=info --concurrency=1 --prefetch-multiplier=1 -Ofair --max-tasks-per-child=1
           # 5. Shared Local Host Volumes (High Performance Local NVMe/SSD)
           volumeMounts:
             - name: app-config-dir
